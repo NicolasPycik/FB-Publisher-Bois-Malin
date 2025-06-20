@@ -4,6 +4,7 @@
 2025-06-19 15:30:44,040 - facebook_api - INFO - FacebookAPI initialized
 2025-06-19 15:53:11,217 - facebook_api - INFO - FacebookAPI initialized
 2025-06-19 16:19:45,537 - facebook_api - INFO - FacebookAPI initialized
+<<<<<<< HEAD
 2025-06-20 08:33:07,278 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
@@ -20,3 +21,5 @@
 2025-06-20 08:39:41,726 - werkzeug - INFO -  * Restarting with stat
 2025-06-20 08:39:42,198 - werkzeug - WARNING -  * Debugger is active!
 2025-06-20 08:39:42,199 - werkzeug - INFO -  * Debugger PIN: 793-429-248
+=======
+>>>>>>> a9aeeabe8b0d932745fe0d09bd24f226c8b8841a
