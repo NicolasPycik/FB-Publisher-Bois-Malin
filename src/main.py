@@ -125,8 +125,18 @@ def sync_facebook_pages():
                         settings[key] = value
         
         access_token = settings.get('FACEBOOK_ACCESS_TOKEN')
-        if not access_token:
-            return jsonify({'error': 'Token d\'accès Facebook non configuré'}), 400
+        if not access_token or access_token.strip() == '':
+            return jsonify({
+                'error': 'Token d\'accès Facebook non configuré',
+                'message': 'Veuillez configurer votre token d\'accès Facebook dans les Paramètres.',
+                'action_required': 'configure_token',
+                'instructions': [
+                    '1. Allez dans l\'onglet Paramètres',
+                    '2. Remplissez votre Access Token Facebook',
+                    '3. Cliquez sur Sauvegarder',
+                    '4. Revenez ici et cliquez sur Synchroniser'
+                ]
+            }), 400
         
         # Call Facebook Graph API to get pages
         import requests
@@ -138,11 +148,58 @@ def sync_facebook_pages():
             'fields': 'id,name'
         }
         
-        me_response = requests.get(me_url, params=me_params)
+        try:
+            me_response = requests.get(me_url, params=me_params, timeout=10)
+        except requests.exceptions.Timeout:
+            return jsonify({
+                'error': 'Timeout de connexion à Facebook',
+                'message': 'La connexion à Facebook a pris trop de temps. Veuillez réessayer.',
+                'action_required': 'retry'
+            }), 500
+        except requests.exceptions.ConnectionError:
+            return jsonify({
+                'error': 'Erreur de connexion à Facebook',
+                'message': 'Impossible de se connecter à Facebook. Vérifiez votre connexion internet.',
+                'action_required': 'check_connection'
+            }), 500
+        
         if me_response.status_code != 200:
             error_data = me_response.json()
-            error_message = error_data.get('error', {}).get('message', 'Token invalide')
-            return jsonify({'error': f'Token Facebook invalide: {error_message}'}), 400
+            error_info = error_data.get('error', {})
+            error_message = error_info.get('message', 'Token invalide')
+            error_code = error_info.get('code', 'unknown')
+            error_type = error_info.get('type', 'unknown')
+            
+            # Handle specific Facebook errors
+            if error_code == 190:  # Invalid token
+                return jsonify({
+                    'error': 'Token Facebook invalide ou expiré',
+                    'message': f'Erreur validating access token: {error_message}',
+                    'action_required': 'regenerate_token',
+                    'instructions': [
+                        '1. Votre token a expiré ou est invalide',
+                        '2. Allez sur https://developers.facebook.com/tools/explorer/',
+                        '3. Générez un nouveau token avec les permissions pages_manage_posts et pages_show_list',
+                        '4. Copiez le nouveau token dans les Paramètres',
+                        '5. Sauvegardez et réessayez la synchronisation'
+                    ],
+                    'facebook_error': {
+                        'code': error_code,
+                        'type': error_type,
+                        'message': error_message
+                    }
+                }), 400
+            else:
+                return jsonify({
+                    'error': f'Erreur Facebook API (Code: {error_code})',
+                    'message': error_message,
+                    'action_required': 'check_token',
+                    'facebook_error': {
+                        'code': error_code,
+                        'type': error_type,
+                        'message': error_message
+                    }
+                }), 400
         
         user_data = me_response.json()
         user_name = user_data.get('name', 'Utilisateur')
@@ -151,18 +208,29 @@ def sync_facebook_pages():
         permissions_url = f"https://graph.facebook.com/v18.0/me/permissions"
         permissions_params = {'access_token': access_token}
         
-        permissions_response = requests.get(permissions_url, params=permissions_params)
+        permissions_response = requests.get(permissions_url, params=permissions_params, timeout=10)
         permissions_data = permissions_response.json() if permissions_response.status_code == 200 else {'data': []}
         granted_permissions = [p['permission'] for p in permissions_data.get('data', []) if p.get('status') == 'granted']
         
         # Check if user has pages_manage_posts permission
-        if 'pages_manage_posts' not in granted_permissions and 'pages_show_list' not in granted_permissions:
+        required_permissions = ['pages_manage_posts', 'pages_show_list']
+        missing_permissions = [perm for perm in required_permissions if perm not in granted_permissions]
+        
+        if missing_permissions:
             return jsonify({
                 'error': 'Permissions insuffisantes',
-                'message': f'Bonjour {user_name}, votre token n\'a pas les permissions nécessaires pour gérer les pages.',
-                'required_permissions': ['pages_manage_posts', 'pages_show_list'],
+                'message': f'Bonjour {user_name}, votre token n\'a pas toutes les permissions nécessaires.',
+                'action_required': 'add_permissions',
+                'missing_permissions': missing_permissions,
                 'current_permissions': granted_permissions,
-                'solution': 'Veuillez générer un nouveau token avec les permissions pages_manage_posts et pages_show_list dans l\'Explorateur d\'API Graph Facebook.'
+                'instructions': [
+                    '1. Allez sur https://developers.facebook.com/tools/explorer/',
+                    '2. Sélectionnez votre application',
+                    '3. Cliquez sur "Ajouter des permissions"',
+                    f'4. Ajoutez les permissions manquantes: {", ".join(missing_permissions)}',
+                    '5. Générez un nouveau token',
+                    '6. Copiez le nouveau token dans les Paramètres'
+                ]
             }), 400
         
         # Get ALL pages managed by the user with pagination
@@ -174,37 +242,113 @@ def sync_facebook_pages():
             'limit': 100  # Maximum limit per request
         }
         
+        page_count = 0
+        max_iterations = 20  # Safety limit to prevent infinite loops
+        iteration = 0
+        
         # Pagination loop to get all pages
-        while pages_url:
-            response = requests.get(pages_url, params=params)
+        while pages_url and iteration < max_iterations:
+            iteration += 1
+            
+            try:
+                response = requests.get(pages_url, params=params, timeout=15)
+            except requests.exceptions.Timeout:
+                return jsonify({
+                    'error': 'Timeout lors de la récupération des pages',
+                    'message': f'La récupération des pages a pris trop de temps (page {iteration}). {len(all_pages)} pages récupérées.',
+                    'partial_data': len(all_pages) > 0,
+                    'pages_count': len(all_pages)
+                }), 500
+            except requests.exceptions.RequestException as e:
+                return jsonify({
+                    'error': 'Erreur de connexion lors de la pagination',
+                    'message': f'Erreur réseau lors de la récupération des pages (page {iteration}): {str(e)}',
+                    'partial_data': len(all_pages) > 0,
+                    'pages_count': len(all_pages)
+                }), 500
             
             if response.status_code != 200:
-                error_data = response.json()
-                error_message = error_data.get('error', {}).get('message', 'Erreur API Facebook')
-                return jsonify({'error': f'Erreur Facebook API: {error_message}'}), 400
+                error_data = response.json() if response.content else {}
+                error_info = error_data.get('error', {})
+                error_message = error_info.get('message', 'Erreur API Facebook')
+                error_code = error_info.get('code', 'unknown')
+                
+                # If we have some pages already, return partial results
+                if len(all_pages) > 0:
+                    return jsonify({
+                        'warning': f'Erreur lors de la pagination (Code: {error_code})',
+                        'message': f'Récupération partielle: {len(all_pages)} pages récupérées avant l\'erreur.',
+                        'partial_data': True,
+                        'pages_count': len(all_pages),
+                        'error_details': {
+                            'code': error_code,
+                            'message': error_message,
+                            'iteration': iteration
+                        }
+                    }), 206  # Partial Content
+                else:
+                    return jsonify({
+                        'error': f'Erreur Facebook API lors de la pagination (Code: {error_code})',
+                        'message': error_message,
+                        'action_required': 'check_token_permissions',
+                        'facebook_error': {
+                            'code': error_code,
+                            'message': error_message,
+                            'iteration': iteration
+                        }
+                    }), 400
             
             data = response.json()
             current_pages = data.get('data', [])
+            
+            if not current_pages:
+                # No more pages in this batch, but check if there's a next URL
+                paging = data.get('paging', {})
+                if not paging.get('next'):
+                    break
+            
             all_pages.extend(current_pages)
+            page_count += len(current_pages)
+            
+            # Debug logging
+            print(f"Pagination iteration {iteration}: Retrieved {len(current_pages)} pages, total: {len(all_pages)}")
             
             # Check if there are more pages to fetch
             paging = data.get('paging', {})
             pages_url = paging.get('next')  # URL for next page of results
-            params = {}  # Clear params for next URL as it contains all needed parameters
+            
+            # Clear params for next URL as it contains all needed parameters
+            if pages_url:
+                params = {}
+            
+            # Safety check: if we're getting the same URL, break to prevent infinite loop
+            if iteration > 1 and pages_url and 'after=' not in pages_url:
+                print(f"Warning: Potential infinite loop detected at iteration {iteration}")
+                break
         
         pages = all_pages
+        
+        # Enhanced logging for debugging
+        print(f"Final pagination result: {len(pages)} pages retrieved in {iteration} iterations")
         
         if len(pages) == 0:
             return jsonify({
                 'error': 'Aucune page trouvée',
                 'message': f'Bonjour {user_name}, aucune page Facebook n\'a été trouvée sur votre compte.',
+                'action_required': 'check_page_access',
                 'debug_info': {
                     'user_id': user_data.get('id'),
                     'user_name': user_name,
                     'permissions': granted_permissions,
-                    'api_response': data
+                    'iterations': iteration,
+                    'last_api_response': data if 'data' in locals() else None
                 },
-                'solution': 'Vérifiez que vous êtes administrateur de pages Facebook ou créez une page de test.'
+                'instructions': [
+                    '1. Vérifiez que vous êtes administrateur de pages Facebook',
+                    '2. Ou créez une page de test pour tester l\'application',
+                    '3. Assurez-vous que votre token a les bonnes permissions',
+                    '4. Vérifiez que vos pages ne sont pas dans un état restreint'
+                ]
             }), 200
         
         # Format pages data for frontend

@@ -1241,7 +1241,10 @@
             
             try {
                 const response = await fetch('/api/facebook/pages/sync', {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
                 const data = await response.json();
@@ -1249,16 +1252,160 @@
                 if (response.ok && data.success) {
                     showNotification(data.message, 'success');
                     loadPages(data.pages);
+                    
+                    // Update dashboard count if available
+                    if (data.pages && data.pages.length > 0) {
+                        updateDashboardCount(data.pages.length);
+                    }
+                } else if (response.status === 206 && data.partial_data) {
+                    // Partial success - some pages retrieved
+                    showNotification(`${data.message} Données partielles récupérées.`, 'warning');
+                    if (data.pages && data.pages.length > 0) {
+                        loadPages(data.pages);
+                        updateDashboardCount(data.pages.length);
+                    }
                 } else {
-                    showNotification(data.error || 'Erreur lors de la synchronisation', 'error');
+                    // Handle different error types
+                    const errorType = data.action_required || 'unknown';
+                    let errorMessage = data.error || 'Erreur lors de la synchronisation';
+                    
+                    if (data.instructions && data.instructions.length > 0) {
+                        errorMessage += '\n\nInstructions:\n' + data.instructions.join('\n');
+                    }
+                    
+                    showNotification(errorMessage, 'error');
+                    
+                    // Show detailed error modal for specific cases
+                    if (errorType === 'configure_token' || errorType === 'regenerate_token') {
+                        showTokenErrorModal(data);
+                    } else if (errorType === 'add_permissions') {
+                        showPermissionsErrorModal(data);
+                    }
                 }
             } catch (error) {
-                showNotification('Erreur de connexion', 'error');
+                console.error('Sync error:', error);
+                showNotification('Erreur de connexion au serveur. Vérifiez votre connexion internet.', 'error');
             } finally {
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
             }
         });
+        
+        // Helper function to update dashboard count
+        function updateDashboardCount(count) {
+            const dashboardCards = document.querySelectorAll('.dashboard-card .value');
+            if (dashboardCards.length > 0) {
+                dashboardCards[0].textContent = count;
+            }
+        }
+        
+        // Show detailed error modal for token issues
+        function showTokenErrorModal(data) {
+            const modal = document.createElement('div');
+            modal.className = 'error-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> ${data.error}</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>${data.message}</p>
+                            ${data.instructions ? `
+                                <div class="instructions">
+                                    <h4>Instructions:</h4>
+                                    <ol>
+                                        ${data.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
+                                    </ol>
+                                </div>
+                            ` : ''}
+                            <div class="modal-actions">
+                                <button class="btn" onclick="window.open('https://developers.facebook.com/tools/explorer/', '_blank')">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Ouvrir l'Explorateur API
+                                </button>
+                                <button class="btn btn-secondary" onclick="showSection('settings')">
+                                    <i class="fas fa-cog"></i>
+                                    Aller aux Paramètres
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal handlers
+            modal.querySelector('.modal-close').onclick = () => modal.remove();
+            modal.querySelector('.modal-overlay').onclick = (e) => {
+                if (e.target === modal.querySelector('.modal-overlay')) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        // Show detailed error modal for permissions issues
+        function showPermissionsErrorModal(data) {
+            const modal = document.createElement('div');
+            modal.className = 'error-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-shield-alt"></i> Permissions insuffisantes</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>${data.message}</p>
+                            <div class="permissions-info">
+                                <div class="permission-section">
+                                    <h4>Permissions manquantes:</h4>
+                                    <ul class="missing-permissions">
+                                        ${data.missing_permissions.map(perm => `<li><i class="fas fa-times text-red"></i> ${perm}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div class="permission-section">
+                                    <h4>Permissions actuelles:</h4>
+                                    <ul class="current-permissions">
+                                        ${data.current_permissions.map(perm => `<li><i class="fas fa-check text-green"></i> ${perm}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                            ${data.instructions ? `
+                                <div class="instructions">
+                                    <h4>Instructions:</h4>
+                                    <ol>
+                                        ${data.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
+                                    </ol>
+                                </div>
+                            ` : ''}
+                            <div class="modal-actions">
+                                <button class="btn" onclick="window.open('https://developers.facebook.com/tools/explorer/', '_blank')">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Ouvrir l'Explorateur API
+                                </button>
+                                <button class="btn btn-secondary" onclick="this.closest('.error-modal').remove()">
+                                    <i class="fas fa-times"></i>
+                                    Fermer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal handlers
+            modal.querySelector('.modal-close').onclick = () => modal.remove();
+            modal.querySelector('.modal-overlay').onclick = (e) => {
+                if (e.target === modal.querySelector('.modal-overlay')) {
+                    modal.remove();
+                }
+            };
+        }
 
         // Load Pages
         function loadPages(pages) {
@@ -2473,4 +2620,209 @@
     </script>
 </body>
 </html>
+
+
+        /* Error Modal Styles */
+        .error-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: var(--danger-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: var(--gray-600);
+            background: var(--gray-100);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-body p {
+            margin-bottom: 1.5rem;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+        
+        .instructions {
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .instructions h4 {
+            margin: 0 0 1rem 0;
+            color: var(--gray-800);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .instructions ol {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+        
+        .permissions-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .permission-section h4 {
+            margin: 0 0 1rem 0;
+            color: var(--gray-800);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .missing-permissions,
+        .current-permissions {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .missing-permissions li,
+        .current-permissions li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+        }
+        
+        .missing-permissions li {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        
+        .current-permissions li {
+            background: #f0fdf4;
+            color: #166534;
+        }
+        
+        .text-red {
+            color: var(--danger-color);
+        }
+        
+        .text-green {
+            color: var(--success-color);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .modal-actions .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                max-height: 90vh;
+            }
+            
+            .modal-header,
+            .modal-body {
+                padding: 1.5rem;
+            }
+            
+            .permissions-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
 
