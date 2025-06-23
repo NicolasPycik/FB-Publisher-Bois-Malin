@@ -575,7 +575,7 @@
             btn.disabled = true;
 
             try {
-                const response = await fetch('/api/facebook/sync-pages', {
+                const response = await fetch('/api/facebook/pages/sync', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
