@@ -243,35 +243,52 @@ def sync_facebook_pages():
         }
         
         page_count = 0
-        max_iterations = 20  # Safety limit to prevent infinite loops
+        max_iterations = 50  # Increased safety limit for more pages
         iteration = 0
+        
+        print(f"Starting pagination to fetch all pages for user {user_name}")
         
         # Pagination loop to get all pages
         while pages_url and iteration < max_iterations:
             iteration += 1
+            print(f"Pagination iteration {iteration}: Fetching from {pages_url[:100]}...")
             
             try:
-                response = requests.get(pages_url, params=params, timeout=15)
+                response = requests.get(pages_url, params=params, timeout=30)  # Increased timeout
             except requests.exceptions.Timeout:
+                print(f"Timeout at iteration {iteration}, returning {len(all_pages)} pages")
                 return jsonify({
-                    'error': 'Timeout lors de la récupération des pages',
-                    'message': f'La récupération des pages a pris trop de temps (page {iteration}). {len(all_pages)} pages récupérées.',
+                    'warning': 'Timeout lors de la récupération des pages',
+                    'message': f'Récupération partielle: {len(all_pages)} pages récupérées avant le timeout.',
                     'partial_data': len(all_pages) > 0,
-                    'pages_count': len(all_pages)
-                }), 500
+                    'pages_count': len(all_pages),
+                    'pages': all_pages[:10] if len(all_pages) > 0 else []  # Return first 10 for preview
+                }), 206
             except requests.exceptions.RequestException as e:
-                return jsonify({
-                    'error': 'Erreur de connexion lors de la pagination',
-                    'message': f'Erreur réseau lors de la récupération des pages (page {iteration}): {str(e)}',
-                    'partial_data': len(all_pages) > 0,
-                    'pages_count': len(all_pages)
-                }), 500
+                print(f"Network error at iteration {iteration}: {str(e)}")
+                if len(all_pages) > 0:
+                    return jsonify({
+                        'warning': 'Erreur de connexion lors de la pagination',
+                        'message': f'Récupération partielle: {len(all_pages)} pages récupérées avant l\'erreur.',
+                        'partial_data': True,
+                        'pages_count': len(all_pages),
+                        'pages': all_pages[:10]  # Return first 10 for preview
+                    }), 206
+                else:
+                    return jsonify({
+                        'error': 'Erreur de connexion lors de la pagination',
+                        'message': f'Erreur réseau: {str(e)}'
+                    }), 500
+            
+            print(f"Response status: {response.status_code}")
             
             if response.status_code != 200:
                 error_data = response.json() if response.content else {}
                 error_info = error_data.get('error', {})
                 error_message = error_info.get('message', 'Erreur API Facebook')
                 error_code = error_info.get('code', 'unknown')
+                
+                print(f"API Error at iteration {iteration}: {error_code} - {error_message}")
                 
                 # If we have some pages already, return partial results
                 if len(all_pages) > 0:
@@ -280,6 +297,7 @@ def sync_facebook_pages():
                         'message': f'Récupération partielle: {len(all_pages)} pages récupérées avant l\'erreur.',
                         'partial_data': True,
                         'pages_count': len(all_pages),
+                        'pages': all_pages[:10],  # Return first 10 for preview
                         'error_details': {
                             'code': error_code,
                             'message': error_message,
@@ -301,35 +319,46 @@ def sync_facebook_pages():
             data = response.json()
             current_pages = data.get('data', [])
             
+            print(f"Retrieved {len(current_pages)} pages in iteration {iteration}")
+            
             if not current_pages:
-                # No more pages in this batch, but check if there's a next URL
+                print(f"No pages in current batch at iteration {iteration}")
+                # No more pages in this batch, check if there's a next URL
                 paging = data.get('paging', {})
-                if not paging.get('next'):
+                next_url = paging.get('next')
+                if not next_url:
+                    print("No next URL found, ending pagination")
                     break
+                else:
+                    print(f"No pages but next URL exists: {next_url[:100]}...")
             
             all_pages.extend(current_pages)
             page_count += len(current_pages)
             
-            # Debug logging
-            print(f"Pagination iteration {iteration}: Retrieved {len(current_pages)} pages, total: {len(all_pages)}")
+            print(f"Total pages so far: {len(all_pages)}")
             
             # Check if there are more pages to fetch
             paging = data.get('paging', {})
-            pages_url = paging.get('next')  # URL for next page of results
+            next_url = paging.get('next')
             
-            # Clear params for next URL as it contains all needed parameters
-            if pages_url:
-                params = {}
+            if next_url:
+                pages_url = next_url
+                params = {}  # Clear params as next URL contains all needed parameters
+                print(f"Next URL found: {next_url[:100]}...")
+            else:
+                print("No next URL, pagination complete")
+                break
             
-            # Safety check: if we're getting the same URL, break to prevent infinite loop
-            if iteration > 1 and pages_url and 'after=' not in pages_url:
-                print(f"Warning: Potential infinite loop detected at iteration {iteration}")
+            # Additional safety check for infinite loops
+            if iteration > 1 and next_url and 'after=' not in next_url and 'before=' not in next_url:
+                print(f"Warning: Potential infinite loop detected at iteration {iteration} - no pagination cursor")
                 break
         
         pages = all_pages
         
         # Enhanced logging for debugging
-        print(f"Final pagination result: {len(pages)} pages retrieved in {iteration} iterations")
+        print(f"PAGINATION COMPLETE: {len(pages)} pages retrieved in {iteration} iterations")
+        print(f"Page names: {[p.get('name', 'Unknown') for p in pages[:10]]}")  # Log first 10 page names
         
         if len(pages) == 0:
             return jsonify({
