@@ -221,10 +221,33 @@
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
 
-        textarea.form-control {
+        .form-control.textarea {
             resize: vertical;
             min-height: 120px;
         }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
 
         /* Alerts */
         .alert {
@@ -459,6 +482,8 @@
                     </button>
                 </div>
                 
+                <div id="alert-container"></div>
+                
                 <div class="form-group">
                     <label for="app-id">App ID Facebook</label>
                     <input type="text" id="app-id" class="form-control" placeholder="Votre App ID Facebook">
@@ -502,6 +527,9 @@
     <script>
         // Navigation
         document.addEventListener('DOMContentLoaded', function() {
+            // Load initial settings
+            loadSettings();
+            
             const menuItems = document.querySelectorAll('.menu-item');
             const sections = document.querySelectorAll('.section');
 
@@ -606,6 +634,20 @@
         }
 
         // Settings functionality
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.app_id) {
+                    document.getElementById('app-id').value = data.app_id;
+                }
+                // Don't load secrets for security
+            } catch (error) {
+                console.error('Load settings error:', error);
+            }
+        }
+
         async function saveSettings() {
             const appId = document.getElementById('app-id').value;
             const appSecret = document.getElementById('app-secret').value;
