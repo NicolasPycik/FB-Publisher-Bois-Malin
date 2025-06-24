@@ -1,0 +1,1 @@
+2025-06-19 15:28:49,310 - app - ERROR - Failed to initialize Facebook API: Missing APP_ID or APP_SECRET in environment variables
