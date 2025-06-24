@@ -1,0 +1,4617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Publisher Bois Malin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar fixe 5cm (190px) */
+        .sidebar {
+            width: 190px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #ecf0f1;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu li {
+            margin-bottom: 5px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #34495e;
+            color: white;
+        }
+
+        .menu i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .card h3 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .card .change {
+            color: #27ae60;
+            font-size: 12px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-control.textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+
+        /* Alerts */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            
+            .sidebar h2,
+            .menu span {
+                display: none;
+            }
+            
+            .menu a {
+                justify-content: center;
+                padding: 12px 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+                        
+            /* Publishing Interface Styles */
+            .publish-form {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 24px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .form-control {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e1e8ed;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: border-color 0.3s ease;
+            }
+            
+            .form-control:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+            
+            .character-count {
+                text-align: right;
+                font-size: 12px;
+                color: #7f8c8d;
+                margin-top: 4px;
+            }
+            
+            .media-upload {
+                border: 2px dashed #bdc3c7;
+                border-radius: 8px;
+                padding: 40px;
+                text-align: center;
+                background: #f8f9fa;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .media-upload:hover {
+                border-color: #3498db;
+                background: #ebf3fd;
+            }
+            
+            .media-upload.dragover {
+                border-color: #2ecc71;
+                background: #d5f4e6;
+            }
+            
+            .upload-icon {
+                font-size: 48px;
+                color: #bdc3c7;
+                margin-bottom: 16px;
+            }
+            
+            .pages-selection {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 24px;
+            }
+            
+            .pages-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 16px;
+                margin-top: 16px;
+            }
+            
+            .page-card {
+                border: 2px solid #e1e8ed;
+                border-radius: 8px;
+                padding: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background: white;
+            }
+            
+            .page-card:hover {
+                border-color: #3498db;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .page-card.selected {
+                border-color: #2ecc71;
+                background: #d5f4e6;
+            }
+            
+            .page-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .page-avatar {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: #3498db;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+            }
+            
+            .page-details h4 {
+                margin: 0 0 4px 0;
+                font-size: 16px;
+                color: #2c3e50;
+            }
+            
+            .page-details p {
+                margin: 0;
+                font-size: 14px;
+                color: #7f8c8d;
+            }
+            
+            .selection-controls {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            
+            .btn-outline {
+                background: transparent;
+                border: 2px solid #3498db;
+                color: #3498db;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-outline:hover {
+                background: #3498db;
+                color: white;
+            }
+            
+            .preview-section {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .post-preview {
+                border: 1px solid #e1e8ed;
+                border-radius: 8px;
+                padding: 16px;
+                background: #f8f9fa;
+                margin-top: 16px;
+            }
+            
+            .publish-actions {
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+                margin-top: 24px;
+            }
+            
+            .btn-primary {
+                background: #2ecc71;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: background 0.3s ease;
+            }
+            
+            .btn-primary:hover {
+                background: #27ae60;
+            }
+            
+            .btn-secondary {
+                background: #95a5a6;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: background 0.3s ease;
+            }
+            
+            .btn-secondary:hover {
+                background: #7f8c8d;
+            }
+            
+            /* Statistics & Boost Styles */
+            .stats-overview {
+                margin-bottom: 32px;
+            }
+            
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 24px;
+            }
+            
+            .stat-card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                transition: transform 0.3s ease;
+            }
+            
+            .stat-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            }
+            
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                color: white;
+            }
+            
+            .stat-card:nth-child(1) .stat-icon { background: #3498db; }
+            .stat-card:nth-child(2) .stat-icon { background: #e74c3c; }
+            .stat-card:nth-child(3) .stat-icon { background: #f39c12; }
+            .stat-card:nth-child(4) .stat-icon { background: #9b59b6; }
+            
+            .stat-content {
+                flex: 1;
+            }
+            
+            .stat-value {
+                font-size: 32px;
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 4px;
+            }
+            
+            .stat-label {
+                font-size: 14px;
+                color: #7f8c8d;
+                margin-bottom: 8px;
+            }
+            
+            .stat-change {
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+            
+            .stat-change.positive {
+                background: #d5f4e6;
+                color: #27ae60;
+            }
+            
+            .stat-change.negative {
+                background: #fadbd8;
+                color: #e74c3c;
+            }
+            
+            .stat-change.neutral {
+                background: #f8f9fa;
+                color: #7f8c8d;
+            }
+            
+            .posts-performance {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .performance-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+            }
+            
+            .performance-header h2 {
+                margin: 0;
+                color: #2c3e50;
+            }
+            
+            .performance-filters {
+                display: flex;
+                gap: 12px;
+            }
+            
+            .performance-filters select {
+                padding: 8px 12px;
+                border: 1px solid #e1e8ed;
+                border-radius: 6px;
+                background: white;
+            }
+            
+            .posts-table-container {
+                overflow-x: auto;
+            }
+            
+            .posts-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 16px;
+            }
+            
+            .posts-table th,
+            .posts-table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #e1e8ed;
+            }
+            
+            .posts-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .posts-table tr:hover {
+                background: #f8f9fa;
+            }
+            
+            .post-content {
+                max-width: 300px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            
+            .post-status {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            
+            .post-status.organic {
+                background: #d5f4e6;
+                color: #27ae60;
+            }
+            
+            .post-status.boosted {
+                background: #fef9e7;
+                color: #f39c12;
+            }
+            
+            .post-actions {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .btn-boost {
+                background: #f39c12;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                transition: background 0.3s ease;
+            }
+            
+            .btn-boost:hover {
+                background: #e67e22;
+            }
+            
+            .btn-boost:disabled {
+                background: #bdc3c7;
+                cursor: not-allowed;
+            }
+            
+            .loading-posts {
+                text-align: center;
+                padding: 40px;
+                color: #7f8c8d;
+            }
+            
+            /* Boost Modal Styles */
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            
+            .modal-content {
+                background: white;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            }
+            
+            .boost-modal {
+                max-width: 900px;
+            }
+            
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 24px;
+                border-bottom: 1px solid #e1e8ed;
+            }
+            
+            .modal-header h3 {
+                margin: 0;
+                color: #2c3e50;
+            }
+            
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                color: #7f8c8d;
+                padding: 8px;
+                border-radius: 4px;
+                transition: background 0.3s ease;
+            }
+            
+            .modal-close:hover {
+                background: #f8f9fa;
+            }
+            
+            .modal-body {
+                padding: 24px;
+            }
+            
+            .modal-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                padding: 24px;
+                border-top: 1px solid #e1e8ed;
+                background: #f8f9fa;
+            }
+            
+            .boost-form {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+            
+            .boost-post-preview h4,
+            .boost-config h4 {
+                margin: 0 0 16px 0;
+                color: #2c3e50;
+                font-size: 18px;
+            }
+            
+            .post-preview-card {
+                border: 1px solid #e1e8ed;
+                border-radius: 8px;
+                padding: 16px;
+                background: #f8f9fa;
+            }
+            
+            .audience-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .audience-option {
+                border: 2px solid #e1e8ed;
+                border-radius: 8px;
+                padding: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .audience-option:hover {
+                border-color: #3498db;
+            }
+            
+            .audience-option input[type="radio"] {
+                display: none;
+            }
+            
+            .audience-option input[type="radio"]:checked + label {
+                color: #2c3e50;
+            }
+            
+            .audience-option input[type="radio"]:checked ~ * {
+                border-color: #2ecc71;
+                background: #d5f4e6;
+            }
+            
+            .audience-option label {
+                cursor: pointer;
+                margin: 0;
+                display: block;
+            }
+            
+            .audience-option label strong {
+                display: block;
+                margin-bottom: 4px;
+                color: #2c3e50;
+            }
+            
+            .audience-option label span {
+                font-size: 14px;
+                color: #7f8c8d;
+            }
+            
+            .custom-audience,
+            .saved-audience {
+                margin-top: 16px;
+                padding: 16px;
+                border: 1px solid #e1e8ed;
+                border-radius: 8px;
+                background: #f8f9fa;
+            }
+            
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            
+            .age-range {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .age-range span {
+                color: #7f8c8d;
+                font-size: 14px;
+            }
+            
+            .form-help {
+                display: block;
+                margin-top: 4px;
+                font-size: 12px;
+                color: #7f8c8d;
+            }
+            
+            .budget-summary {
+                margin-top: 24px;
+                padding: 16px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e1e8ed;
+            }
+            
+            .budget-summary h4 {
+                margin: 0 0 16px 0;
+                color: #2c3e50;
+            }
+            
+            .budget-details {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .budget-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+            }
+            
+            .budget-item.total {
+                border-top: 1px solid #e1e8ed;
+                margin-top: 8px;
+                padding-top: 16px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            
+            @media (max-width: 768px) {
+                .boost-form {
+                    grid-template-columns: 1fr;
+                    gap: 24px;
+                }
+                
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+                
+                .performance-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 16px;
+                }
+                
+                .performance-filters {
+                    width: 100%;
+                }
+                
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>* Publication Interface Styles (v3.0.0) */
+        .publish-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .publish-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .media-upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .media-upload-area:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .media-upload-area.dragover {
+            border-color: #2ecc71;
+            background: #e8f5e8;
+        }
+
+        .upload-placeholder i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+
+        .upload-placeholder p {
+            margin: 10px 0;
+            color: #7f8c8d;
+        }
+
+        .upload-info {
+            font-size: 12px !important;
+            color: #95a5a6 !important;
+        }
+
+        .media-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .media-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .media-item img,
+        .media-item video {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .media-item .remove-media {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .page-selection-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .selected-count {
+            margin-left: auto;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .page-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .page-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .page-card.selected {
+            border-color: #2ecc71;
+            background: #e8f5e8;
+        }
+
+        .page-card .page-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .page-card .page-info {
+            flex: 1;
+        }
+
+        .page-card .page-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .page-card .page-stats {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .page-card .page-checkbox {
+            margin-left: 15px;
+        }
+
+        .loading-pages {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .post-preview {
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            max-width: 500px;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .preview-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .preview-page-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .preview-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .preview-message {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        .preview-media img,
+        .preview-media video {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .preview-link {
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #ecf0f1;
+            text-align: right;
+        }
+
+        .publishing-progress {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .publishing-results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        .result-item.success {
+            background: #e8f5e8;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .result-item.error {
+            background: #fdf2f2;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .result-item i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .result-item.success i {
+            color: #2ecc71;
+        }
+
+        .result-item.error i {
+            color: #e74c3c;
+        }
+        
+        /* Campaign/Ads Interface Styles */
+        .campaign-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-container h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-step {
+            margin-bottom: 30px;
+        }
+        
+        .form-step h3 {
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .form-step h3 i {
+            margin-right: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .audience-targeting h4 {
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+            font-size: 16px;
+        }
+        
+        .form-navigation {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .campaign-review {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .review-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .review-section h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .ad-preview-container {
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            max-width: 400px;
+        }
+        
+        .performance-estimate {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .estimate-metric {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .estimate-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .estimate-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .campaigns-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .campaigns-filters {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .search-group {
+            position: relative;
+            margin-left: auto;
+        }
+        
+        .search-group input {
+            padding-right: 40px;
+        }
+        
+        .search-group i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .campaigns-table {
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table-cell {
+            padding: 15px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .table-cell:last-child {
+            border-right: none;
+        }
+        
+        .campaign-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+            border-bottom: 1px solid #ecf0f1;
+            transition: background 0.3s;
+        }
+        
+        .campaign-row:hover {
+            background: #f8f9fa;
+        }
+        
+        .campaign-row .table-cell {
+            padding: 15px;
+            border-right: 1px solid #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .campaign-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .campaign-objective {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #e8f5e8;
+            color: #2ecc71;
+        }
+        
+        .status-paused {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+        
+        .status-completed {
+            background: #f8f9fa;
+            color: #95a5a6;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn.edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .action-btn.pause {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .loading-campaigns {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .campaign-review {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .campaigns-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                margin-left: 0;
+            }
+            
+            .table-header,
+            .campaign-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .table-cell {
+                border-right: none;
+                border-bottom: 1px solid #ecf0f1;
+            }
+        }
+        
+        /* Audiences Interface Styles */
+        .audiences-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .audiences-filters {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .search-group {
+            position: relative;
+            flex: 1;
+        }
+        
+        .search-group input {
+            padding-right: 40px;
+        }
+        
+        .search-group i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .audiences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .audience-card {
+            background: white;
+            border: 2px solid #ecf0f1;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .audience-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .audience-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .audience-info {
+            flex: 1;
+        }
+        
+        .audience-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .audience-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .audience-type.custom {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .audience-type.lookalike {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .audience-type.saved {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+        
+        .audience-description {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        .audience-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .audience-size {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .audience-size .size-number {
+            font-size: 18px;
+            color: #3498db;
+        }
+        
+        .audience-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn.edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .action-btn.edit:hover {
+            background: #2980b9;
+        }
+        
+        .action-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .action-btn.delete:hover {
+            background: #c0392b;
+        }
+        
+        .loading-audiences {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: #7f8c8d;
+        }
+        
+        .loading-audiences i {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .audience-targeting h4 {
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+            font-size: 16px;
+        }
+        
+        .audience-estimate {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .estimate-display {
+            text-align: center;
+        }
+        
+        .estimate-number {
+            margin-bottom: 15px;
+        }
+        
+        .estimate-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .estimate-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-left: 5px;
+        }
+        
+        .estimate-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .estimate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .estimate-feedback {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar 5cm -->
+        <aside class="sidebar">
+            <h2>FB Publisher</h2>
+            <ul class="menu">
+                <li><a href="#" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="publish">
+                    <i class="fas fa-edit"></i>
+                    <span>Publier</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="pages">
+                    <i class="fab fa-facebook"></i>
+                    <span>Pages Facebook</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="campaigns">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Publicités</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="audiences">
+                    <i class="fas fa-users"></i>
+                    <span>Audiences</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="scheduled">
+                    <i class="fas fa-clock"></i>
+                    <span>Programmées</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a></li>
+            </ul>
+        </aside>
+
+        <!-- Contenu principal -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard</h1>
+                    <button class="btn">
+                        <i class="fas fa-sync"></i>
+                        Actualiser
+                    </button>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Pages connectées</h3>
+                        <div class="value">66</div>
+                        <div class="change">+2 cette semaine</div>
+                    </div>
+                    <div class="card">
+                        <h3>Publications</h3>
+                        <div class="value">247</div>
+                        <div class="change">+15 aujourd'hui</div>
+                    </div>
+                    <div class="card">
+                        <h3>Portée totale</h3>
+                        <div class="value">45.2K</div>
+                        <div class="change">+8.3% ce mois</div>
+                    </div>
+                    <div class="card">
+                        <h3>Engagement</h3>
+                        <div class="value">12.8%</div>
+                        <div class="change">+2.1% ce mois</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Page</th>
+                                <th>Abonnés</th>
+                                <th>Dernière publication</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Les Bois Malouins</td>
+                                <td>2,340</td>
+                                <td>Il y a 2h</td>
+                                <td><span class="status connected">Connectée</span></td>
+                            </tr>
+                            <tr>
+                                <td>Bois Grand Ouest</td>
+                                <td>1,890</td>
+                                <td>Il y a 4h</td>
+                                <td><span class="status connected">Connectée</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Publish Section -->
+            <section id="publish" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Publier du contenu</h1>
+                    <button class="btn" id="scheduleBtn">
+                        <i class="fas fa-clock"></i>
+                        Programmer
+                    </button>
+                </div>
+                
+                <!-- Publication Form -->
+                <div class="publish-container">
+                    <div class="publish-form">
+                        <div class="form-group">
+                            <label for="post-message">Message de la publication *</label>
+                            <textarea id="post-message" class="form-control" placeholder="Rédigez votre publication..." rows="4" required></textarea>
+                            <div class="char-counter">
+                                <span id="char-count">0</span>/2000 caractères
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="post-link">Lien (optionnel)</label>
+                            <input type="url" id="post-link" class="form-control" placeholder="https://exemple.com">
+                        </div>
+                        
+                        <!-- Media Upload -->
+                        <div class="form-group">
+                            <label>Médias (images/vidéos)</label>
+                            <div class="media-upload-area" id="mediaUploadArea">
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Glissez vos fichiers ici ou cliquez pour sélectionner</p>
+                                    <p class="upload-info">Formats supportés: JPG, PNG, GIF, MP4, AVI, MOV</p>
+                                </div>
+                                <input type="file" id="mediaFiles" multiple accept="image/*,video/*" style="display: none;">
+                            </div>
+                            <div id="mediaPreview" class="media-preview"></div>
+                        </div>
+                        
+                        <!-- Page Selection -->
+                        <div class="form-group">
+                            <label>Sélection des pages</label>
+                            <div class="page-selection-controls">
+                                <button type="button" class="btn btn-secondary" id="selectAllPages">
+                                    <i class="fas fa-check-double"></i>
+                                    Sélectionner tout
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="deselectAllPages">
+                                    <i class="fas fa-times"></i>
+                                    Désélectionner tout
+                                </button>
+                                <span class="selected-count">
+                                    <span id="selectedPagesCount">0</span> page(s) sélectionnée(s)
+                                </span>
+                            </div>
+                            
+                            <div class="pages-grid" id="pagesGrid">
+                                <!-- Pages will be loaded dynamically -->
+                                <div class="loading-pages">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Chargement des pages...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview -->
+                        <div class="form-group">
+                            <label>Prévisualisation</label>
+                            <div class="post-preview" id="postPreview">
+                                <div class="preview-header">
+                                    <img src="https://via.placeholder.com/40" alt="Page" class="preview-avatar">
+                                    <div class="preview-info">
+                                        <div class="preview-page-name">Nom de la page</div>
+                                        <div class="preview-time">À l'instant</div>
+                                    </div>
+                                </div>
+                                <div class="preview-content">
+                                    <div class="preview-message" id="previewMessage">Votre message apparaîtra ici...</div>
+                                    <div class="preview-media" id="previewMedia"></div>
+                                    <div class="preview-link" id="previewLink" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="saveDraftBtn">
+                                <i class="fas fa-save"></i>
+                                Sauvegarder brouillon
+                            </button>
+                            <button type="button" class="btn btn-primary" id="publishNowBtn">
+                                <i class="fas fa-paper-plane"></i>
+                                Publier maintenant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Publishing Progress Modal -->
+                <div id="publishingModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Publication en cours...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="publishing-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="publishProgress"></div>
+                                </div>
+                                <div class="progress-text" id="publishProgressText">Préparation...</div>
+                            </div>
+                            <div class="publishing-results" id="publishingResults"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="closePublishModal" style="display: none;">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pages Section -->
+            <section id="pages" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Pages Facebook</h1>
+                    <button class="btn" id="syncPagesBtn">
+                        <i class="fas fa-sync"></i>
+                        Synchroniser
+                    </button>
+                </div>
+                
+                <div id="alert-container"></div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nom de la page</th>
+                                <th>Abonnés</th>
+                                <th>Dernière publication</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pages-table-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    Cliquez sur "Synchroniser" pour charger vos pages Facebook
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Paramètres</h1>
+                    <button class="btn" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder
+                    </button>
+                </div>
+                
+                <div id="alert-container"></div>
+                
+                <div class="form-group">
+                    <label for="app-id">App ID Facebook</label>
+                    <input type="text" id="app-id" class="form-control" placeholder="Votre App ID Facebook">
+                </div>
+                
+                <div class="form-group">
+                    <label for="app-secret">App Secret Facebook</label>
+                    <input type="password" id="app-secret" class="form-control" placeholder="Votre App Secret Facebook">
+                </div>
+                
+                <div class="form-group">
+                    <label for="access-token">Access Token</label>
+                    <input type="password" id="access-token" class="form-control" placeholder="Votre Access Token Facebook">
+                </div>
+            </section>
+
+            <!-- Other sections (campaigns, analytics, scheduled) -->
+            <section id="campaigns" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Publicités</h1>
+                    <button class="btn btn-primary" id="createCampaignBtn">
+                        <i class="fas fa-plus"></i>
+                        Nouvelle campagne
+                    </button>
+                </div>
+                
+                <!-- Campaign Creation Form -->
+                <div id="campaignCreationForm" class="campaign-form" style="display: none;">
+                    <div class="form-container">
+                        <h2>Créer une nouvelle campagne publicitaire</h2>
+                        
+                        <!-- Step 1: Campaign -->
+                        <div class="form-step" id="step1">
+                            <h3><i class="fas fa-bullhorn"></i> Étape 1: Campagne</h3>
+                            <div class="form-group">
+                                <label for="campaignName">Nom de la campagne *</label>
+                                <input type="text" id="campaignName" placeholder="Ex: Promotion Terrasses Été 2025" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="campaignObjective">Objectif de la campagne *</label>
+                                <select id="campaignObjective" required>
+                                    <option value="">Sélectionner un objectif</option>
+                                    <option value="REACH">Portée - Toucher le maximum de personnes</option>
+                                    <option value="TRAFFIC">Trafic - Diriger vers votre site web</option>
+                                    <option value="ENGAGEMENT">Engagement - Interactions avec vos publications</option>
+                                    <option value="LEAD_GENERATION">Génération de prospects</option>
+                                    <option value="CONVERSIONS">Conversions - Ventes ou actions spécifiques</option>
+                                    <option value="BRAND_AWARENESS">Notoriété de la marque</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="campaignBudget">Budget total (€) *</label>
+                                <input type="number" id="campaignBudget" min="10" placeholder="100" required>
+                                <small>Budget minimum: 10€</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Ad Set -->
+                        <div class="form-step" id="step2" style="display: none;">
+                            <h3><i class="fas fa-users"></i> Étape 2: Audience et Ciblage</h3>
+                            <div class="form-group">
+                                <label for="adsetName">Nom du groupe d'annonces *</label>
+                                <input type="text" id="adsetName" placeholder="Ex: Propriétaires 25-55 ans Région Ouest" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="audienceType">Type d'audience *</label>
+                                <select id="audienceType" required>
+                                    <option value="">Sélectionner le type d'audience</option>
+                                    <option value="saved">Audience sauvegardée</option>
+                                    <option value="custom">Audience personnalisée</option>
+                                    <option value="lookalike">Audience similaire</option>
+                                </select>
+                            </div>
+                            <div id="savedAudienceSelect" style="display: none;">
+                                <label for="savedAudience">Audience sauvegardée *</label>
+                                <select id="savedAudience">
+                                    <option value="">Chargement des audiences...</option>
+                                </select>
+                            </div>
+                            <div id="customAudienceForm" style="display: none;">
+                                <div class="audience-targeting">
+                                    <h4>Ciblage géographique</h4>
+                                    <div class="form-group">
+                                        <label for="location">Localisation *</label>
+                                        <input type="text" id="location" placeholder="France, Région, Ville..." required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="radius">Rayon (km)</label>
+                                        <input type="number" id="radius" min="1" max="80" placeholder="25">
+                                    </div>
+                                    
+                                    <h4>Démographie</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ageMin">Âge minimum</label>
+                                            <select id="ageMin">
+                                                <option value="18">18</option>
+                                                <option value="25">25</option>
+                                                <option value="35">35</option>
+                                                <option value="45">45</option>
+                                                <option value="55">55</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ageMax">Âge maximum</label>
+                                            <select id="ageMax">
+                                                <option value="35">35</option>
+                                                <option value="45">45</option>
+                                                <option value="55">55</option>
+                                                <option value="65">65+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gender">Genre</label>
+                                        <select id="gender">
+                                            <option value="all">Tous</option>
+                                            <option value="male">Hommes</option>
+                                            <option value="female">Femmes</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <h4>Centres d'intérêt</h4>
+                                    <div class="form-group">
+                                        <label for="interests">Centres d'intérêt</label>
+                                        <input type="text" id="interests" placeholder="Bricolage, Jardinage, Aménagement extérieur...">
+                                        <small>Séparez par des virgules</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="dailyBudget">Budget quotidien (€) *</label>
+                                <input type="number" id="dailyBudget" min="5" placeholder="20" required>
+                                <small>Budget minimum: 5€/jour</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="startDate">Date de début *</label>
+                                    <input type="date" id="startDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Date de fin</label>
+                                    <input type="date" id="endDate">
+                                    <small>Laissez vide pour une campagne continue</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Ad Creative -->
+                        <div class="form-step" id="step3" style="display: none;">
+                            <h3><i class="fas fa-image"></i> Étape 3: Création publicitaire</h3>
+                            <div class="form-group">
+                                <label for="adName">Nom de l'annonce *</label>
+                                <input type="text" id="adName" placeholder="Ex: Visuel Terrasse Bois Promotion" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adFormat">Format de l'annonce *</label>
+                                <select id="adFormat" required>
+                                    <option value="">Sélectionner un format</option>
+                                    <option value="single_image">Image unique</option>
+                                    <option value="carousel">Carrousel (plusieurs images)</option>
+                                    <option value="video">Vidéo</option>
+                                    <option value="slideshow">Diaporama</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adPage">Page Facebook *</label>
+                                <select id="adPage" required>
+                                    <option value="">Chargement des pages...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adHeadline">Titre principal *</label>
+                                <input type="text" id="adHeadline" maxlength="40" placeholder="Terrasses en bois de qualité" required>
+                                <div class="char-counter">0/40</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="adText">Texte de l'annonce *</label>
+                                <textarea id="adText" maxlength="125" placeholder="Découvrez nos terrasses en bois de qualité supérieure. Installation professionnelle garantie." required></textarea>
+                                <div class="char-counter">0/125</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="adDescription">Description *</label>
+                                <input type="text" id="adDescription" maxlength="30" placeholder="Devis gratuit en 24h" required>
+                                <div class="char-counter">0/30</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="adUrl">URL de destination</label>
+                                <input type="url" id="adUrl" placeholder="https://votre-site.com/terrasses">
+                            </div>
+                            <div class="form-group">
+                                <label for="callToAction">Bouton d'action *</label>
+                                <select id="callToAction" required>
+                                    <option value="">Sélectionner une action</option>
+                                    <option value="LEARN_MORE">En savoir plus</option>
+                                    <option value="SHOP_NOW">Acheter maintenant</option>
+                                    <option value="CONTACT_US">Nous contacter</option>
+                                    <option value="GET_QUOTE">Obtenir un devis</option>
+                                    <option value="SIGN_UP">S'inscrire</option>
+                                    <option value="DOWNLOAD">Télécharger</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Médias de l'annonce *</label>
+                                <div class="media-upload-area" id="adMediaUpload">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Glissez-déposez vos images/vidéos ici</p>
+                                        <p>ou cliquez pour sélectionner</p>
+                                        <p class="upload-info">Images: JPG, PNG (max 8MB) | Vidéos: MP4 (max 100MB)</p>
+                                    </div>
+                                </div>
+                                <div id="adMediaPreview" class="media-preview"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Review -->
+                        <div class="form-step" id="step4" style="display: none;">
+                            <h3><i class="fas fa-eye"></i> Étape 4: Aperçu et validation</h3>
+                            <div class="campaign-review">
+                                <div class="review-section">
+                                    <h4>Résumé de la campagne</h4>
+                                    <div id="campaignSummary"></div>
+                                </div>
+                                <div class="review-section">
+                                    <h4>Aperçu de l'annonce</h4>
+                                    <div id="adPreview" class="ad-preview-container"></div>
+                                </div>
+                                <div class="review-section">
+                                    <h4>Estimation des performances</h4>
+                                    <div id="performanceEstimate" class="performance-estimate"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Navigation -->
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevStepBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Précédent
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextStepBtn">
+                                Suivant
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button type="button" class="btn btn-success" id="createCampaignSubmitBtn" style="display: none;">
+                                <i class="fas fa-rocket"></i>
+                                Lancer la campagne
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelCampaignBtn">
+                                <i class="fas fa-times"></i>
+                                Annuler
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campaigns List -->
+                <div id="campaignsList" class="campaigns-container">
+                    <div class="campaigns-filters">
+                        <div class="filter-group">
+                            <label for="campaignStatusFilter">Statut:</label>
+                            <select id="campaignStatusFilter">
+                                <option value="all">Tous</option>
+                                <option value="active">Actives</option>
+                                <option value="paused">En pause</option>
+                                <option value="completed">Terminées</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="campaignObjectiveFilter">Objectif:</label>
+                            <select id="campaignObjectiveFilter">
+                                <option value="all">Tous</option>
+                                <option value="REACH">Portée</option>
+                                <option value="TRAFFIC">Trafic</option>
+                                <option value="ENGAGEMENT">Engagement</option>
+                                <option value="CONVERSIONS">Conversions</option>
+                            </select>
+                        </div>
+                        <div class="search-group">
+                            <input type="text" id="campaignSearch" placeholder="Rechercher une campagne...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="campaignsTable" class="campaigns-table">
+                        <div class="table-header">
+                            <div class="table-cell">Campagne</div>
+                            <div class="table-cell">Statut</div>
+                            <div class="table-cell">Budget</div>
+                            <div class="table-cell">Portée</div>
+                            <div class="table-cell">Clics</div>
+                            <div class="table-cell">CPC</div>
+                            <div class="table-cell">Actions</div>
+                        </div>
+                        <div id="campaignsTableBody">
+                            <div class="loading-campaigns">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Chargement des campagnes...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Audiences Section -->
+            <section id="audiences" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Gestion des Audiences</h1>
+                    <button class="btn btn-primary" id="createAudienceBtn">
+                        <i class="fas fa-plus"></i>
+                        Nouvelle audience
+                    </button>
+                </div>
+
+                <!-- Audiences List -->
+                <div class="audiences-container">
+                    <div class="audiences-filters">
+                        <div class="search-group">
+                            <input type="text" id="audienceSearch" class="form-control" placeholder="Rechercher une audience...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <select id="audienceTypeFilter" class="form-control">
+                            <option value="">Tous les types</option>
+                            <option value="custom">Audiences personnalisées</option>
+                            <option value="lookalike">Audiences similaires</option>
+                            <option value="saved">Audiences sauvegardées</option>
+                        </select>
+                    </div>
+
+                    <div class="audiences-grid" id="audiencesGrid">
+                        <div class="loading-audiences">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Chargement des audiences...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create/Edit Audience Modal -->
+                <div id="audienceModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="audienceModalTitle">Nouvelle audience</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form id="audienceForm">
+                                <div class="form-group">
+                                    <label for="audienceName">Nom de l'audience *</label>
+                                    <input type="text" id="audienceName" class="form-control" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="audienceDescription">Description</label>
+                                    <textarea id="audienceDescription" class="form-control" rows="3" placeholder="Description de l'audience..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="audienceType">Type d'audience</label>
+                                    <select id="audienceType" class="form-control" required>
+                                        <option value="">Sélectionner un type</option>
+                                        <option value="custom">Audience personnalisée</option>
+                                        <option value="lookalike">Audience similaire</option>
+                                        <option value="saved">Audience sauvegardée</option>
+                                    </select>
+                                </div>
+
+                                <!-- Targeting Options -->
+                                <div class="audience-targeting">
+                                    <h4><i class="fas fa-crosshairs"></i> Ciblage</h4>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="audienceAgeMin">Âge minimum</label>
+                                            <select id="audienceAgeMin" class="form-control">
+                                                <option value="18">18</option>
+                                                <option value="25">25</option>
+                                                <option value="35">35</option>
+                                                <option value="45">45</option>
+                                                <option value="55">55</option>
+                                                <option value="65">65+</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="audienceAgeMax">Âge maximum</label>
+                                            <select id="audienceAgeMax" class="form-control">
+                                                <option value="24">24</option>
+                                                <option value="34">34</option>
+                                                <option value="44">44</option>
+                                                <option value="54">54</option>
+                                                <option value="64">64</option>
+                                                <option value="65">65+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="audienceGender">Genre</label>
+                                        <select id="audienceGender" class="form-control">
+                                            <option value="all">Tous</option>
+                                            <option value="male">Hommes</option>
+                                            <option value="female">Femmes</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="audienceLocation">Localisation</label>
+                                        <input type="text" id="audienceLocation" class="form-control" placeholder="Pays, régions, villes...">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="audienceInterests">Centres d'intérêt</label>
+                                        <input type="text" id="audienceInterests" class="form-control" placeholder="Bricolage, jardinage, décoration...">
+                                        <small class="form-text">Séparez les intérêts par des virgules</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="audienceBehaviors">Comportements</label>
+                                        <input type="text" id="audienceBehaviors" class="form-control" placeholder="Propriétaires, acheteurs en ligne...">
+                                        <small class="form-text">Séparez les comportements par des virgules</small>
+                                    </div>
+                                </div>
+
+                                <!-- Estimated Reach -->
+                                <div class="audience-estimate">
+                                    <h4><i class="fas fa-chart-line"></i> Portée estimée</h4>
+                                    <div class="estimate-display">
+                                        <div class="estimate-number" id="estimatedReach">
+                                            <span class="estimate-value">--</span>
+                                            <span class="estimate-label">personnes</span>
+                                        </div>
+                                        <div class="estimate-bar">
+                                            <div class="estimate-fill" id="estimateFill"></div>
+                                        </div>
+                                        <div class="estimate-feedback" id="estimateFeedback">
+                                            Définissez vos critères de ciblage pour voir la portée estimée
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelAudienceBtn">Annuler</button>
+                            <button type="button" class="btn btn-primary" id="saveAudienceBtn">
+                                <i class="fas fa-save"></i>
+                                Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="analytics" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Statistiques & Boost</h1>
+                    <button class="btn" id="refreshStatsBtn">
+                        <i class="fas fa-sync"></i>
+                        Actualiser
+                    </button>
+                </div>
+                
+                <!-- Stats Overview -->
+                <div class="stats-overview">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalReach">0</div>
+                                <div class="stat-label">Portée totale</div>
+                                <div class="stat-change positive">+12.5%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalEngagement">0</div>
+                                <div class="stat-label">Engagement</div>
+                                <div class="stat-change positive">+8.3%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-share"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalShares">0</div>
+                                <div class="stat-label">Partages</div>
+                                <div class="stat-change positive">+15.7%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="activeBoostedPosts">0</div>
+                                <div class="stat-label">Posts boostés actifs</div>
+                                <div class="stat-change neutral">En cours</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Posts Performance -->
+                <div class="posts-performance">
+                    <div class="performance-header">
+                        <h2>Performance des publications</h2>
+                        <div class="performance-filters">
+                            <select id="pageFilter" class="form-control">
+                                <option value="">Toutes les pages</option>
+                            </select>
+                            <select id="timeFilter" class="form-control">
+                                <option value="7">7 derniers jours</option>
+                                <option value="30">30 derniers jours</option>
+                                <option value="90">90 derniers jours</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="posts-table-container">
+                        <table class="posts-table">
+                            <thead>
+                                <tr>
+                                    <th>Publication</th>
+                                    <th>Page</th>
+                                    <th>Date</th>
+                                    <th>Portée</th>
+                                    <th>Engagement</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="postsTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading-posts">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        Chargement des publications...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Boost Post Modal -->
+                <div id="boostPostModal" class="modal" style="display: none;">
+                    <div class="modal-content boost-modal">
+                        <div class="modal-header">
+                            <h3>Booster la publication</h3>
+                            <button class="modal-close" id="closeBoostModal">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="boost-form">
+                                <!-- Post Preview -->
+                                <div class="boost-post-preview">
+                                    <h4>Aperçu de la publication</h4>
+                                    <div class="post-preview-card" id="boostPostPreview">
+                                        <!-- Post content will be loaded here -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Boost Configuration -->
+                                <div class="boost-config">
+                                    <h4>Configuration du boost</h4>
+                                    
+                                    <div class="form-group">
+                                        <label for="boostObjective">Objectif de la campagne</label>
+                                        <select id="boostObjective" class="form-control">
+                                            <option value="REACH">Portée - Toucher plus de personnes</option>
+                                            <option value="ENGAGEMENT">Engagement - Plus d'interactions</option>
+                                            <option value="TRAFFIC">Trafic - Visites sur le site web</option>
+                                            <option value="CONVERSIONS">Conversions - Actions spécifiques</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="boostBudget">Budget quotidien (€)</label>
+                                        <input type="number" id="boostBudget" class="form-control" min="5" max="1000" value="20">
+                                        <small class="form-help">Budget minimum : 5€/jour</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="boostDuration">Durée (jours)</label>
+                                        <input type="number" id="boostDuration" class="form-control" min="1" max="30" value="7">
+                                        <small class="form-help">Durée recommandée : 7-14 jours</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Audience cible</label>
+                                        <div class="audience-options">
+                                            <div class="audience-option">
+                                                <input type="radio" id="audienceAuto" name="audienceType" value="auto" checked>
+                                                <label for="audienceAuto">
+                                                    <strong>Automatique</strong>
+                                                    <span>Facebook optimise l'audience</span>
+                                                </label>
+                                            </div>
+                                            <div class="audience-option">
+                                                <input type="radio" id="audienceCustom" name="audienceType" value="custom">
+                                                <label for="audienceCustom">
+                                                    <strong>Personnalisée</strong>
+                                                    <span>Définir manuellement</span>
+                                                </label>
+                                            </div>
+                                            <div class="audience-option">
+                                                <input type="radio" id="audienceSaved" name="audienceType" value="saved">
+                                                <label for="audienceSaved">
+                                                    <strong>Audience sauvegardée</strong>
+                                                    <span>Utiliser une audience existante</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Custom Audience Settings -->
+                                    <div id="customAudienceSettings" class="custom-audience" style="display: none;">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="audienceAge">Âge</label>
+                                                <div class="age-range">
+                                                    <select id="ageMin" class="form-control">
+                                                        <option value="18">18</option>
+                                                        <option value="25">25</option>
+                                                        <option value="35">35</option>
+                                                        <option value="45">45</option>
+                                                        <option value="55">55</option>
+                                                    </select>
+                                                    <span>à</span>
+                                                    <select id="ageMax" class="form-control">
+                                                        <option value="35">35</option>
+                                                        <option value="45">45</option>
+                                                        <option value="55">55</option>
+                                                        <option value="65">65+</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="audienceGender">Genre</label>
+                                                <select id="audienceGender" class="form-control">
+                                                    <option value="all">Tous</option>
+                                                    <option value="male">Hommes</option>
+                                                    <option value="female">Femmes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="audienceLocation">Localisation</label>
+                                            <input type="text" id="audienceLocation" class="form-control" placeholder="France, Paris, etc.">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="audienceInterests">Centres d'intérêt</label>
+                                            <input type="text" id="audienceInterests" class="form-control" placeholder="Bois, Construction, Bricolage, etc.">
+                                            <small class="form-help">Séparez par des virgules</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Saved Audience Selection -->
+                                    <div id="savedAudienceSettings" class="saved-audience" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="savedAudienceSelect">Choisir une audience</label>
+                                            <select id="savedAudienceSelect" class="form-control">
+                                                <option value="">Sélectionner une audience...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Budget Summary -->
+                                    <div class="budget-summary">
+                                        <h4>Résumé du budget</h4>
+                                        <div class="budget-details">
+                                            <div class="budget-item">
+                                                <span>Budget quotidien :</span>
+                                                <span id="summaryDailyBudget">20€</span>
+                                            </div>
+                                            <div class="budget-item">
+                                                <span>Durée :</span>
+                                                <span id="summaryDuration">7 jours</span>
+                                            </div>
+                                            <div class="budget-item total">
+                                                <span>Budget total estimé :</span>
+                                                <span id="summaryTotalBudget">140€</span>
+                                            </div>
+                                            <div class="budget-item">
+                                                <span>Portée estimée :</span>
+                                                <span id="summaryEstimatedReach">2,000 - 5,000 personnes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelBoostBtn">
+                                Annuler
+                            </button>
+                            <button type="button" class="btn btn-primary" id="submitBoostBtn">
+                                <i class="fas fa-rocket"></i>
+                                Lancer le boost
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="scheduled" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Publications programmées</h1>
+                </div>
+                <p>Section des publications programmées en cours de développement.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial settings
+            loadSettings();
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = document.querySelectorAll('.section');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Remove active class from all menu items and sections
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked item and corresponding section
+                    this.classList.add('active');
+                    document.getElementById(targetSection).classList.add('active');
+                    
+                    // Load section-specific data
+                    if (targetSection === 'pages') {
+                        loadFacebookPages();
+                    }
+                });
+            });
+
+            // Sync pages button
+            const syncBtn = document.getElementById('syncPagesBtn');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', syncFacebookPages);
+            }
+
+            // Save settings button
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveSettings);
+            }
+        });
+
+        // Facebook Pages functionality
+        async function syncFacebookPages() {
+            const btn = document.getElementById('syncPagesBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Synchronisation...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/facebook/pages/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(`${data.pages.length} pages synchronisées avec succès`, 'success');
+                    displayPages(data.pages);
+                } else {
+                    showAlert(data.error || 'Erreur lors de la synchronisation', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showAlert('Erreur de connexion', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function displayPages(pages) {
+            const tbody = document.getElementById('pages-table-body');
+            tbody.innerHTML = '';
+
+            pages.forEach(page => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${page.name}</td>
+                    <td>${page.fan_count || 'N/A'}</td>
+                    <td>${page.last_post || 'Récemment'}</td>
+                    <td><span class="status connected">Connectée</span></td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function loadFacebookPages() {
+            try {
+                const response = await fetch('/api/facebook/pages');
+                const data = await response.json();
+                
+                if (data.pages && data.pages.length > 0) {
+                    displayPages(data.pages);
+                }
+            } catch (error) {
+                console.error('Load pages error:', error);
+            }
+        }
+
+        // Settings functionality
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.app_id) {
+                    document.getElementById('app-id').value = data.app_id;
+                }
+                // Don't load secrets for security
+            } catch (error) {
+                console.error('Load settings error:', error);
+            }
+        }
+
+        async function saveSettings() {
+            const appId = document.getElementById('app-id').value;
+            const appSecret = document.getElementById('app-secret').value;
+            const accessToken = document.getElementById('access-token').value;
+
+            if (!appId.trim() || !appSecret.trim() || !accessToken.trim()) {
+                showAlert('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        app_id: appId,
+                        app_secret: appSecret,
+                        access_token: accessToken
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Paramètres sauvegardés avec succès', 'success');
+                } else {
+                    showAlert(data.error || 'Erreur lors de la sauvegarde', 'error');
+                }
+            } catch (error) {
+                console.error('Settings save error:', error);
+                showAlert('Erreur de connexion', 'error');
+            }
+        }
+
+        // Alert system
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Publication Interface (v3.0.0)
+        let selectedPages = [];
+        let uploadedFiles = [];
+        let allPages = [];
+
+        // Initialize publication interface
+        function initPublishInterface() {
+            loadPagesForPublishing();
+            setupMediaUpload();
+            setupPreview();
+            setupPageSelection();
+            setupPublishButton();
+        }
+
+        // Load pages for publishing
+        async function loadPagesForPublishing() {
+            try {
+                const response = await fetch('/api/facebook/pages/publishing');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allPages = data.pages;
+                    renderPagesGrid(allPages);
+                } else {
+                    showAlert('Erreur lors du chargement des pages', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading pages:', error);
+                showAlert('Erreur de connexion', 'error');
+            }
+        }
+
+        // Render pages grid
+        function renderPagesGrid(pages) {
+            const grid = document.getElementById('pagesGrid');
+            
+            if (pages.length === 0) {
+                grid.innerHTML = '<div class="loading-pages">Aucune page disponible</div>';
+                return;
+            }
+
+            grid.innerHTML = pages.map(page => `
+                <div class="page-card" data-page-id="${page.id}" onclick="togglePageSelection('${page.id}')">
+                    <img src="${page.picture || 'https://via.placeholder.com/50'}" alt="${page.name}" class="page-avatar">
+                    <div class="page-info">
+                        <div class="page-name">${page.name}</div>
+                        <div class="page-stats">${page.fan_count} abonnés • ${page.category}</div>
+                    </div>
+                    <input type="checkbox" class="page-checkbox" data-page-id="${page.id}">
+                </div>
+            `).join('');
+        }
+
+        // Toggle page selection
+        function togglePageSelection(pageId) {
+            const pageCard = document.querySelector(`[data-page-id="${pageId}"]`);
+            const checkbox = pageCard.querySelector('.page-checkbox');
+            
+            if (selectedPages.includes(pageId)) {
+                selectedPages = selectedPages.filter(id => id !== pageId);
+                pageCard.classList.remove('selected');
+                checkbox.checked = false;
+            } else {
+                selectedPages.push(pageId);
+                pageCard.classList.add('selected');
+                checkbox.checked = true;
+            }
+            
+            updateSelectedCount();
+        }
+
+        // Update selected pages count
+        function updateSelectedCount() {
+            document.getElementById('selectedPagesCount').textContent = selectedPages.length;
+        }
+
+        // Setup page selection controls
+        function setupPageSelection() {
+            document.getElementById('selectAllPages').addEventListener('click', () => {
+                selectedPages = allPages.map(page => page.id);
+                document.querySelectorAll('.page-card').forEach(card => {
+                    card.classList.add('selected');
+                    card.querySelector('.page-checkbox').checked = true;
+                });
+                updateSelectedCount();
+            });
+
+            document.getElementById('deselectAllPages').addEventListener('click', () => {
+                selectedPages = [];
+                document.querySelectorAll('.page-card').forEach(card => {
+                    card.classList.remove('selected');
+                    card.querySelector('.page-checkbox').checked = false;
+                });
+                updateSelectedCount();
+            });
+        }
+
+        // Setup media upload
+        function setupMediaUpload() {
+            const uploadArea = document.getElementById('mediaUploadArea');
+            const fileInput = document.getElementById('mediaFiles');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        // Handle uploaded files
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    uploadedFiles.push(file);
+                    addMediaPreview(file);
+                }
+            });
+            updatePreview();
+        }
+
+        // Add media preview
+        function addMediaPreview(file) {
+            const preview = document.getElementById('mediaPreview');
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-item';
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const isVideo = file.type.startsWith('video/');
+                mediaItem.innerHTML = `
+                    ${isVideo ? 
+                        `<video src="${e.target.result}" controls></video>` : 
+                        `<img src="${e.target.result}" alt="Preview">`
+                    }
+                    <button class="remove-media" onclick="removeMedia(${uploadedFiles.length - 1})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+            };
+            reader.readAsDataURL(file);
+            
+            preview.appendChild(mediaItem);
+        }
+
+        // Remove media
+        function removeMedia(index) {
+            uploadedFiles.splice(index, 1);
+            const preview = document.getElementById('mediaPreview');
+            preview.children[index].remove();
+            updatePreview();
+        }
+
+        // Setup preview
+        function setupPreview() {
+            const messageInput = document.getElementById('post-message');
+            const linkInput = document.getElementById('post-link');
+            const charCount = document.getElementById('char-count');
+
+            messageInput.addEventListener('input', () => {
+                charCount.textContent = messageInput.value.length;
+                updatePreview();
+            });
+
+            linkInput.addEventListener('input', updatePreview);
+        }
+
+        // Update preview
+        function updatePreview() {
+            const message = document.getElementById('post-message').value;
+            const link = document.getElementById('post-link').value;
+            
+            document.getElementById('previewMessage').textContent = message || 'Votre message apparaîtra ici...';
+            
+            const linkPreview = document.getElementById('previewLink');
+            if (link) {
+                linkPreview.style.display = 'block';
+                linkPreview.innerHTML = `<i class="fas fa-link"></i> ${link}`;
+            } else {
+                linkPreview.style.display = 'none';
+            }
+
+            const mediaPreview = document.getElementById('previewMedia');
+            if (uploadedFiles.length > 0) {
+                mediaPreview.innerHTML = uploadedFiles.map(file => {
+                    const isVideo = file.type.startsWith('video/');
+                    return isVideo ? 
+                        `<video src="${URL.createObjectURL(file)}" controls style="max-width: 100%; margin-bottom: 10px;"></video>` :
+                        `<img src="${URL.createObjectURL(file)}" style="max-width: 100%; margin-bottom: 10px;">`;
+                }).join('');
+            } else {
+                mediaPreview.innerHTML = '';
+            }
+        }
+
+        // Setup publish button
+        function setupPublishButton() {
+            document.getElementById('publishNowBtn').addEventListener('click', publishPost);
+        }
+
+        // Publish post
+        async function publishPost() {
+            const message = document.getElementById('post-message').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+
+            if (!message) {
+                showAlert('Le message est obligatoire', 'error');
+                return;
+            }
+
+            if (selectedPages.length === 0) {
+                showAlert('Veuillez sélectionner au moins une page', 'error');
+                return;
+            }
+
+            // Show publishing modal
+            showPublishingModal();
+
+            try {
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('page_ids', JSON.stringify(selectedPages));
+                
+                if (link) {
+                    formData.append('link', link);
+                }
+
+                uploadedFiles.forEach(file => {
+                    formData.append('media_files', file);
+                });
+
+                const response = await fetch('/api/facebook/publish/multi', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showPublishingResults(data);
+                } else {
+                    hidePublishingModal();
+                    showAlert(data.error || 'Erreur lors de la publication', 'error');
+                }
+            } catch (error) {
+                console.error('Publishing error:', error);
+                hidePublishingModal();
+                showAlert('Erreur de connexion', 'error');
+            }
+        }
+
+        // Show publishing modal
+        function showPublishingModal() {
+            const modal = document.getElementById('publishingModal');
+            modal.style.display = 'flex';
+            
+            // Reset progress
+            document.getElementById('publishProgress').style.width = '0%';
+            document.getElementById('publishProgressText').textContent = 'Préparation...';
+            document.getElementById('publishingResults').innerHTML = '';
+            document.getElementById('closePublishModal').style.display = 'none';
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                
+                document.getElementById('publishProgress').style.width = progress + '%';
+                document.getElementById('publishProgressText').textContent = 
+                    progress < 30 ? 'Préparation...' :
+                    progress < 60 ? 'Upload des médias...' :
+                    progress < 90 ? 'Publication en cours...' : 'Finalisation...';
+                
+                if (progress >= 90) {
+                    clearInterval(progressInterval);
+                }
+            }, 500);
+        }
+
+        // Show publishing results
+        function showPublishingResults(data) {
+            document.getElementById('publishProgress').style.width = '100%';
+            document.getElementById('publishProgressText').textContent = 'Terminé !';
+            
+            const resultsContainer = document.getElementById('publishingResults');
+            const results = data.results;
+            
+            resultsContainer.innerHTML = Object.keys(results).map(pageId => {
+                const result = results[pageId];
+                const page = allPages.find(p => p.id === pageId);
+                const pageName = page ? page.name : pageId;
+                
+                return `
+                    <div class="result-item ${result.success ? 'success' : 'error'}">
+                        <i class="fas fa-${result.success ? 'check' : 'times'}"></i>
+                        <div>
+                            <strong>${pageName}</strong><br>
+                            <small>${result.message}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('closePublishModal').style.display = 'inline-block';
+            
+            // Reset form if all successful
+            if (data.summary.failed === 0) {
+                resetPublishForm();
+            }
+        }
+
+        // Hide publishing modal
+        function hidePublishingModal() {
+            document.getElementById('publishingModal').style.display = 'none';
+        }
+
+        // Reset publish form
+        function resetPublishForm() {
+            document.getElementById('post-message').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('char-count').textContent = '0';
+            document.getElementById('mediaPreview').innerHTML = '';
+            uploadedFiles = [];
+            selectedPages = [];
+            document.querySelectorAll('.page-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.page-checkbox').checked = false;
+            });
+            updateSelectedCount();
+            updatePreview();
+        }
+
+        // Close modal event
+        document.getElementById('closePublishModal').addEventListener('click', hidePublishingModal);
+
+        // Initialize when publish section is shown
+        document.addEventListener('DOMContentLoaded', () => {
+            const publishMenuItem = document.querySelector('[data-section="publish"]');
+            if (publishMenuItem) {
+                publishMenuItem.addEventListener('click', () => {
+                    setTimeout(initPublishInterface, 100);
+                });
+            }
+            
+            // Initialize analytics section
+            const analyticsMenuItem = document.querySelector('[data-section="analytics"]');
+            if (analyticsMenuItem) {
+                analyticsMenuItem.addEventListener('click', () => {
+                    setTimeout(initAnalyticsInterface, 100);
+                });
+            }
+        });
+        
+        // Analytics & Boost Post functionality
+        let currentPosts = [];
+        let currentBoostPost = null;
+        
+        // Initialize analytics interface
+        function initAnalyticsInterface() {
+            loadPostsPerformance();
+            loadSavedAudiences();
+            setupBoostModal();
+            setupAnalyticsEventListeners();
+        }
+        
+        // Load posts performance data
+        async function loadPostsPerformance() {
+            try {
+                showAlert('Chargement des statistiques...', 'info');
+                
+                // Load posts from API
+                const response = await fetch('/api/facebook/posts/performance');
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement des posts');
+                }
+                
+                const data = await response.json();
+                currentPosts = data.posts || [];
+                
+                // Update stats overview
+                updateStatsOverview(data.stats || {});
+                
+                // Update posts table
+                updatePostsTable(currentPosts);
+                
+                // Update page filter
+                updatePageFilter();
+                
+                hideAlert();
+            } catch (error) {
+                console.error('Error loading posts performance:', error);
+                
+                // Show sample data for demo
+                loadSamplePostsData();
+                hideAlert();
+            }
+        }
+        
+        // Load sample posts data for demo
+        function loadSamplePostsData() {
+            const samplePosts = [
+                {
+                    id: 'post_1',
+                    message: 'Découvrez notre nouvelle gamme de terrasses en bois composite ! 🌿',
+                    page_name: 'Les Bois Malouins',
+                    page_id: 'page_1',
+                    created_time: '2025-06-20T10:30:00Z',
+                    reach: 2340,
+                    engagement: 156,
+                    likes: 89,
+                    comments: 23,
+                    shares: 44,
+                    status: 'organic',
+                    boost_eligible: true
+                },
+                {
+                    id: 'post_2',
+                    message: 'Promotion spéciale sur les lames de terrasse en pin traité 🏡',
+                    page_name: 'Bois Grand Ouest',
+                    page_id: 'page_2',
+                    created_time: '2025-06-19T14:15:00Z',
+                    reach: 4560,
+                    engagement: 298,
+                    likes: 167,
+                    comments: 45,
+                    shares: 86,
+                    status: 'boosted',
+                    boost_eligible: false
+                },
+                {
+                    id: 'post_3',
+                    message: 'Conseils d\'entretien pour vos terrasses en bois 🔧',
+                    page_name: 'Terrasses et Bois du Maine',
+                    page_id: 'page_3',
+                    created_time: '2025-06-18T09:45:00Z',
+                    reach: 1890,
+                    engagement: 134,
+                    likes: 78,
+                    comments: 34,
+                    shares: 22,
+                    status: 'organic',
+                    boost_eligible: true
+                }
+            ];
+            
+            const sampleStats = {
+                total_reach: 8790,
+                total_engagement: 588,
+                total_shares: 152,
+                boosted_posts_count: 1,
+                posts_count: 3
+            };
+            
+            currentPosts = samplePosts;
+            updateStatsOverview(sampleStats);
+            updatePostsTable(samplePosts);
+            updatePageFilter();
+        }
+        
+        // Update stats overview
+        function updateStatsOverview(stats) {
+            document.getElementById('totalReach').textContent = formatNumber(stats.total_reach || 0);
+            document.getElementById('totalEngagement').textContent = formatNumber(stats.total_engagement || 0);
+            document.getElementById('totalShares').textContent = formatNumber(stats.total_shares || 0);
+            document.getElementById('activeBoostedPosts').textContent = stats.boosted_posts_count || 0;
+        }
+        
+        // Update posts table
+        function updatePostsTable(posts) {
+            const tbody = document.getElementById('postsTableBody');
+            
+            if (posts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading-posts">Aucune publication trouvée</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = posts.map(post => {
+                const createdDate = new Date(post.created_time);
+                const timeAgo = getTimeAgo(createdDate);
+                
+                return `
+                    <tr>
+                        <td class="post-content">${post.message}</td>
+                        <td>${post.page_name}</td>
+                        <td>${timeAgo}</td>
+                        <td>${formatNumber(post.reach)}</td>
+                        <td>${formatNumber(post.engagement)}</td>
+                        <td>
+                            <span class="post-status ${post.status}">${post.status === 'organic' ? 'Organique' : 'Boosté'}</span>
+                        </td>
+                        <td class="post-actions">
+                            ${post.boost_eligible ? 
+                                `<button class="btn-boost" onclick="openBoostModal('${post.id}')">
+                                    <i class="fas fa-rocket"></i> Booster
+                                </button>` : 
+                                `<button class="btn-boost" disabled>
+                                    <i class="fas fa-check"></i> Boosté
+                                </button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Update page filter
+        function updatePageFilter() {
+            const pageFilter = document.getElementById('pageFilter');
+            const uniquePages = [...new Set(currentPosts.map(post => post.page_name))];
+            
+            pageFilter.innerHTML = '<option value="">Toutes les pages</option>' +
+                uniquePages.map(page => `<option value="${page}">${page}</option>`).join('');
+        }
+        
+        // Setup boost modal
+        function setupBoostModal() {
+            // Close modal events
+            document.getElementById('closeBoostModal').addEventListener('click', closeBoostModal);
+            document.getElementById('boostPostModal').addEventListener('click', (e) => {
+                if (e.target.id === 'boostPostModal') {
+                    closeBoostModal();
+                }
+            });
+            
+            // Audience type change
+            document.querySelectorAll('input[name="audienceType"]').forEach(radio => {
+                radio.addEventListener('change', handleBoostAudienceChange);
+            });
+            
+            // Submit boost
+            document.getElementById('submitBoostBtn').addEventListener('click', submitBoost);
+        }
+        
+        // Open boost modal
+        async function openBoostModal(postId) {
+            currentBoostPost = postId;
+            
+            try {
+                // Load post details
+                const response = await fetch(`/api/facebook/posts/${postId}/details`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateBoostPostPreview(data.post);
+                } else {
+                    // Use sample data
+                    const samplePost = currentPosts.find(p => p.id === postId);
+                    if (samplePost) {
+                        updateBoostPostPreview(samplePost);
+                    }
+                }
+                
+                // Show modal
+                document.getElementById('boostPostModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error loading post details:', error);
+                showAlert('Erreur lors du chargement du post', 'error');
+            }
+        }
+        
+        // Close boost modal
+        function closeBoostModal() {
+            document.getElementById('boostPostModal').style.display = 'none';
+            currentBoostPost = null;
+        }
+        
+        // Update boost post preview
+        function updateBoostPostPreview(post) {
+            const preview = document.getElementById('boostPostPreview');
+            
+            preview.innerHTML = `
+                <div style="border: 1px solid #e1e8ed; border-radius: 8px; padding: 16px; background: white;">
+                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                        <img src="https://via.placeholder.com/40" alt="${post.page_name}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px;">
+                        <div>
+                            <div style="font-weight: 600; color: #2c3e50;">${post.page_name}</div>
+                            <div style="font-size: 12px; color: #7f8c8d;">${getTimeAgo(new Date(post.created_time))}</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px; line-height: 1.4;">${post.message}</div>
+                    ${post.media ? `
+                        <div style="margin-bottom: 12px;">
+                            <img src="${post.media.url}" alt="Post media" style="width: 100%; border-radius: 8px;">
+                        </div>
+                    ` : ''}
+                    ${post.link ? `
+                        <div style="border: 1px solid #e1e8ed; border-radius: 8px; padding: 12px; background: #f8f9fa;">
+                            <i class="fas fa-link" style="color: #3498db; margin-right: 8px;"></i>
+                            <a href="${post.link}" target="_blank" style="color: #3498db; text-decoration: none;">${post.link}</a>
+                        </div>
+                    ` : ''}
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e1e8ed; font-size: 14px; color: #7f8c8d;">
+                        <span><i class="fas fa-eye"></i> ${formatNumber(post.reach)} vues</span>
+                        <span><i class="fas fa-heart"></i> ${formatNumber(post.likes)} j'aime</span>
+                        <span><i class="fas fa-comment"></i> ${formatNumber(post.comments)} commentaires</span>
+                        <span><i class="fas fa-share"></i> ${formatNumber(post.shares)} partages</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Handle boost audience type change
+        function handleBoostAudienceChange() {
+            const selectedType = document.querySelector('input[name="audienceType"]:checked').value;
+            
+            // Hide all custom settings
+            document.getElementById('customAudienceSettings').style.display = 'none';
+            document.getElementById('savedAudienceSettings').style.display = 'none';
+            
+            // Show relevant settings
+            if (selectedType === 'custom') {
+                document.getElementById('customAudienceSettings').style.display = 'block';
+                loadCustomAudienceForm();
+            } else if (selectedType === 'saved') {
+                document.getElementById('savedAudienceSettings').style.display = 'block';
+                loadSavedAudiencesForBoost();
+            }
+        }
+        
+        // Load custom audience form
+        function loadCustomAudienceForm() {
+            const container = document.getElementById('customAudienceSettings');
+            container.innerHTML = `
+                <div class="form-group">
+                    <label for="boostLocation">Localisation</label>
+                    <input type="text" id="boostLocation" class="form-control" value="France" placeholder="Pays, région, ville...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="boostAgeMin">Âge minimum</label>
+                        <select id="boostAgeMin" class="form-control">
+                            <option value="18">18</option>
+                            <option value="25" selected>25</option>
+                            <option value="35">35</option>
+                            <option value="45">45</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="boostAgeMax">Âge maximum</label>
+                        <select id="boostAgeMax" class="form-control">
+                            <option value="35">35</option>
+                            <option value="45">45</option>
+                            <option value="55" selected>55</option>
+                            <option value="65">65+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="boostGender">Genre</label>
+                    <select id="boostGender" class="form-control">
+                        <option value="all">Tous</option>
+                        <option value="male">Hommes</option>
+                        <option value="female">Femmes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="boostInterests">Centres d'intérêt</label>
+                    <input type="text" id="boostInterests" class="form-control" placeholder="Bricolage, Jardinage, Aménagement...">
+                    <small class="form-help">Séparez par des virgules</small>
+                </div>
+            `;
+        }
+        
+        // Load saved audiences for boost
+        async function loadSavedAudiencesForBoost() {
+            const container = document.getElementById('savedAudienceSettings');
+            
+            try {
+                const response = await fetch('/api/facebook/audiences');
+                const data = await response.json();
+                
+                if (data.success && data.audiences.length > 0) {
+                    container.innerHTML = `
+                        <div class="form-group">
+                            <label for="boostSavedAudience">Audience sauvegardée</label>
+                            <select id="boostSavedAudience" class="form-control">
+                                <option value="">Sélectionner une audience...</option>
+                                ${data.audiences.map(audience => 
+                                    `<option value="${audience.id}">${audience.name} (${formatNumber(audience.size)} personnes)</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="form-group">
+                            <p style="color: #7f8c8d; font-style: italic;">Aucune audience sauvegardée disponible. Créez d'abord des audiences dans la section Audiences.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading saved audiences:', error);
+                container.innerHTML = `
+                    <div class="form-group">
+                        <p style="color: #e74c3c;">Erreur lors du chargement des audiences sauvegardées.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Submit boost
+        async function submitBoost() {
+            if (!currentBoostPost) {
+                showAlert('Aucun post sélectionné', 'error');
+                return;
+            }
+            
+            try {
+                // Collect form data
+                const objective = document.getElementById('boostObjective').value;
+                const budget = parseInt(document.getElementById('boostBudget').value);
+                const duration = parseInt(document.getElementById('boostDuration').value);
+                const audienceType = document.querySelector('input[name="audienceType"]:checked').value;
+                
+                // Validate
+                if (!objective || !budget || !duration || budget < 5 || duration < 1) {
+                    showAlert('Veuillez remplir tous les champs obligatoires', 'error');
+                    return;
+                }
+                
+                // Prepare boost data
+                const boostData = {
+                    objective,
+                    budget,
+                    duration,
+                    audience_type: audienceType
+                };
+                
+                // Add audience-specific data
+                if (audienceType === 'custom') {
+                    boostData.location = document.getElementById('boostLocation')?.value || 'France';
+                    boostData.age_min = parseInt(document.getElementById('boostAgeMin')?.value || 25);
+                    boostData.age_max = parseInt(document.getElementById('boostAgeMax')?.value || 55);
+                    boostData.gender = document.getElementById('boostGender')?.value || 'all';
+                    boostData.interests = document.getElementById('boostInterests')?.value || '';
+                } else if (audienceType === 'saved') {
+                    boostData.saved_audience_id = document.getElementById('boostSavedAudience')?.value;
+                    if (!boostData.saved_audience_id) {
+                        showAlert('Veuillez sélectionner une audience sauvegardée', 'error');
+                        return;
+                    }
+                }
+                
+                // Show loading
+                const submitBtn = document.getElementById('submitBoostBtn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création en cours...';
+                submitBtn.disabled = true;
+                
+                // Submit boost
+                const response = await fetch(`/api/facebook/posts/${currentBoostPost}/boost`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(boostData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(`Post boosté avec succès ! Budget: ${budget}€/jour pendant ${duration} jours. Portée estimée: ${formatNumber(result.estimated_reach)} personnes.`, 'success');
+                    closeBoostModal();
+                    loadPostsPerformance(); // Refresh posts
+                } else {
+                    showAlert(result.error || 'Erreur lors du boost', 'error');
+                }
+                
+                // Restore button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Error submitting boost:', error);
+                showAlert('Erreur lors du boost', 'error');
+                
+                // Restore button
+                const submitBtn = document.getElementById('submitBoostBtn');
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Lancer le boost';
+                submitBtn.disabled = false;
+            }
+        }
+                    can_boost: true
+                },
+                {
+                    id: 'post_2',
+                    message: 'Promotion spéciale sur les lames de terrasse ! -20% jusqu\'à dimanche',
+                    page_name: 'Bois Grand Ouest',
+                    page_id: 'page_2',
+                    created_time: '2025-06-19T14:15:00Z',
+                    reach: 1890,
+                    engagement: 234,
+                    likes: 145,
+                    comments: 67,
+                    shares: 22,
+                    status: 'boosted',
+                    can_boost: false,
+                    boost_budget: 25,
+                    boost_reach: 5600
+                },
+                {
+                    id: 'post_3',
+                    message: 'Conseils d\'entretien pour vos terrasses en bois naturel',
+                    page_name: 'Terrasses et Bois du Maine',
+                    page_id: 'page_3',
+                    created_time: '2025-06-18T09:45:00Z',
+                    reach: 1567,
+                    engagement: 98,
+                    likes: 67,
+                    comments: 12,
+                    shares: 19,
+                    status: 'organic',
+                    can_boost: true
+                }
+            ];
+            
+            currentPosts = samplePosts;
+            
+            // Update stats
+            const totalReach = samplePosts.reduce((sum, post) => sum + post.reach, 0);
+            const totalEngagement = samplePosts.reduce((sum, post) => sum + post.engagement, 0);
+            const totalShares = samplePosts.reduce((sum, post) => sum + post.shares, 0);
+            const activeBoosted = samplePosts.filter(post => post.status === 'boosted').length;
+            
+            updateStatsOverview({
+                total_reach: totalReach,
+                total_engagement: totalEngagement,
+                total_shares: totalShares,
+                active_boosted_posts: activeBoosted
+            });
+            
+            updatePostsTable(samplePosts);
+            updatePageFilter();
+        }
+        
+        // Update stats overview
+        function updateStatsOverview(stats) {
+            document.getElementById('totalReach').textContent = formatNumber(stats.total_reach || 0);
+            document.getElementById('totalEngagement').textContent = formatNumber(stats.total_engagement || 0);
+            document.getElementById('totalShares').textContent = formatNumber(stats.total_shares || 0);
+            document.getElementById('activeBoostedPosts').textContent = stats.active_boosted_posts || 0;
+        }
+        
+        // Update posts table
+        function updatePostsTable(posts) {
+            const tbody = document.getElementById('postsTableBody');
+            
+            if (posts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="loading-posts">
+                            Aucune publication trouvée
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = posts.map(post => {
+                const createdDate = new Date(post.created_time);
+                const formattedDate = createdDate.toLocaleDateString('fr-FR');
+                const timeAgo = getTimeAgo(createdDate);
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="post-content" title="${post.message}">
+                                ${post.message}
+                            </div>
+                        </td>
+                        <td>${post.page_name}</td>
+                        <td>
+                            ${formattedDate}<br>
+                            <small style="color: #7f8c8d;">${timeAgo}</small>
+                        </td>
+                        <td>${formatNumber(post.reach)}</td>
+                        <td>
+                            ${formatNumber(post.engagement)}<br>
+                            <small style="color: #7f8c8d;">
+                                ${post.likes} ❤️ ${post.comments} 💬 ${post.shares} 🔄
+                            </small>
+                        </td>
+                        <td>
+                            <span class="post-status ${post.status}">
+                                ${post.status === 'organic' ? 'Organique' : 'Boosté'}
+                            </span>
+                            ${post.status === 'boosted' ? `<br><small>Budget: ${post.boost_budget}€/j</small>` : ''}
+                        </td>
+                        <td>
+                            <div class="post-actions">
+                                <button class="btn-boost" 
+                                        onclick="openBoostModal('${post.id}')"
+                                        ${!post.can_boost ? 'disabled' : ''}>
+                                    <i class="fas fa-bullhorn"></i>
+                                    ${post.status === 'boosted' ? 'Modifier' : 'Booster'}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Update page filter
+        function updatePageFilter() {
+            const pageFilter = document.getElementById('pageFilter');
+            const uniquePages = [...new Set(currentPosts.map(post => post.page_name))];
+            
+            pageFilter.innerHTML = '<option value="">Toutes les pages</option>' +
+                uniquePages.map(pageName => 
+                    `<option value="${pageName}">${pageName}</option>`
+                ).join('');
+        }
+        
+        // Open boost modal
+        function openBoostModal(postId) {
+            const post = currentPosts.find(p => p.id === postId);
+            if (!post) return;
+            
+            currentBoostPost = post;
+            
+            // Update post preview
+            updateBoostPostPreview(post);
+            
+            // Reset form
+            resetBoostForm();
+            
+            // Show modal
+            document.getElementById('boostPostModal').style.display = 'flex';
+        }
+        
+        // Update boost post preview
+        function updateBoostPostPreview(post) {
+            const preview = document.getElementById('boostPostPreview');
+            const createdDate = new Date(post.created_time);
+            
+            preview.innerHTML = `
+                <div style="border-bottom: 1px solid #e1e8ed; padding-bottom: 12px; margin-bottom: 12px;">
+                    <strong>${post.page_name}</strong>
+                    <div style="font-size: 12px; color: #7f8c8d;">${createdDate.toLocaleDateString('fr-FR')}</div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    ${post.message}
+                </div>
+                <div style="font-size: 12px; color: #7f8c8d; display: flex; gap: 16px;">
+                    <span>👁️ ${formatNumber(post.reach)} vues</span>
+                    <span>❤️ ${post.likes} j'aime</span>
+                    <span>💬 ${post.comments} commentaires</span>
+                    <span>🔄 ${post.shares} partages</span>
+                </div>
+            `;
+        }
+        
+        // Reset boost form
+        function resetBoostForm() {
+            document.getElementById('boostObjective').value = 'REACH';
+            document.getElementById('boostBudget').value = '20';
+            document.getElementById('boostDuration').value = '7';
+            document.querySelector('input[name="audienceType"][value="auto"]').checked = true;
+            
+            // Hide custom/saved audience settings
+            document.getElementById('customAudienceSettings').style.display = 'none';
+            document.getElementById('savedAudienceSettings').style.display = 'none';
+            
+            updateBudgetSummary();
+        }
+        
+        // Update budget summary
+        function updateBudgetSummary() {
+            const budget = parseInt(document.getElementById('boostBudget').value) || 20;
+            const duration = parseInt(document.getElementById('boostDuration').value) || 7;
+            const total = budget * duration;
+            
+            document.getElementById('summaryDailyBudget').textContent = budget + '€';
+            document.getElementById('summaryDuration').textContent = duration + ' jours';
+            document.getElementById('summaryTotalBudget').textContent = total + '€';
+            
+            // Estimate reach based on budget
+            const estimatedReach = Math.round((budget * 100) + (budget * 50 * Math.random()));
+            const reachMin = Math.round(estimatedReach * 0.8);
+            const reachMax = Math.round(estimatedReach * 1.2);
+            
+            document.getElementById('summaryEstimatedReach').textContent = 
+                `${formatNumber(reachMin)} - ${formatNumber(reachMax)} personnes`;
+        }
+        
+        // Setup boost modal event listeners
+        function setupBoostModal() {
+            // Close modal
+            document.getElementById('closeBoostModal').addEventListener('click', closeBoostModal);
+            document.getElementById('cancelBoostBtn').addEventListener('click', closeBoostModal);
+            
+            // Budget and duration changes
+            document.getElementById('boostBudget').addEventListener('input', updateBudgetSummary);
+            document.getElementById('boostDuration').addEventListener('input', updateBudgetSummary);
+            
+            // Audience type changes
+            document.querySelectorAll('input[name="audienceType"]').forEach(radio => {
+                radio.addEventListener('change', handleAudienceTypeChange);
+            });
+            
+            // Confirm boost
+            document.getElementById('confirmBoostBtn').addEventListener('click', confirmBoostPost);
+        }
+        
+        // Handle audience type change
+        function handleAudienceTypeChange(event) {
+            const audienceType = event.target.value;
+            
+            document.getElementById('customAudienceSettings').style.display = 
+                audienceType === 'custom' ? 'block' : 'none';
+            document.getElementById('savedAudienceSettings').style.display = 
+                audienceType === 'saved' ? 'block' : 'none';
+        }
+        
+        // Close boost modal
+        function closeBoostModal() {
+            document.getElementById('boostPostModal').style.display = 'none';
+            currentBoostPost = null;
+        }
+        
+        // Confirm boost post
+        async function confirmBoostPost() {
+            if (!currentBoostPost) return;
+            
+            try {
+                const boostData = {
+                    post_id: currentBoostPost.id,
+                    objective: document.getElementById('boostObjective').value,
+                    daily_budget: parseInt(document.getElementById('boostBudget').value),
+                    duration: parseInt(document.getElementById('boostDuration').value),
+                    audience_type: document.querySelector('input[name="audienceType"]:checked').value
+                };
+                
+                // Add custom audience data if selected
+                if (boostData.audience_type === 'custom') {
+                    boostData.audience = {
+                        age_min: document.getElementById('ageMin').value,
+                        age_max: document.getElementById('ageMax').value,
+                        gender: document.getElementById('audienceGender').value,
+                        location: document.getElementById('audienceLocation').value,
+                        interests: document.getElementById('audienceInterests').value.split(',').map(s => s.trim()).filter(s => s)
+                    };
+                } else if (boostData.audience_type === 'saved') {
+                    boostData.saved_audience_id = document.getElementById('savedAudienceSelect').value;
+                }
+                
+                showAlert('Lancement du boost en cours...', 'info');
+                
+                const response = await fetch('/api/facebook/boost/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(boostData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Boost lancé avec succès !', 'success');
+                    closeBoostModal();
+                    loadPostsPerformance(); // Refresh data
+                } else {
+                    showAlert('Erreur lors du lancement du boost: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error boosting post:', error);
+                showAlert('Erreur lors du lancement du boost', 'error');
+            }
+        }
+        
+        // Load saved audiences
+        async function loadSavedAudiences() {
+            try {
+                const response = await fetch('/api/facebook/audiences');
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('savedAudienceSelect');
+                    
+                    select.innerHTML = '<option value="">Sélectionner une audience...</option>' +
+                        data.audiences.map(audience => 
+                            `<option value="${audience.id}">${audience.name}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading saved audiences:', error);
+            }
+        }
+        
+        // Setup analytics event listeners
+        function setupAnalyticsEventListeners() {
+            // Refresh stats
+            document.getElementById('refreshStatsBtn').addEventListener('click', loadPostsPerformance);
+            
+            // Filter changes
+            document.getElementById('pageFilter').addEventListener('change', filterPosts);
+            document.getElementById('timeFilter').addEventListener('change', filterPosts);
+        }
+        
+        // Filter posts
+        function filterPosts() {
+            const pageFilter = document.getElementById('pageFilter').value;
+            const timeFilter = parseInt(document.getElementById('timeFilter').value);
+            
+            let filteredPosts = currentPosts;
+            
+            // Filter by page
+            if (pageFilter) {
+                filteredPosts = filteredPosts.filter(post => post.page_name === pageFilter);
+            }
+            
+            // Filter by time
+            if (timeFilter) {
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - timeFilter);
+                
+                filteredPosts = filteredPosts.filter(post => 
+                    new Date(post.created_time) >= cutoffDate
+                );
+            }
+            
+            updatePostsTable(filteredPosts);
+        }
+        
+        // Utility functions
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHours / 24);
+            
+            if (diffDays > 0) {
+                return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+            } else if (diffHours > 0) {
+                return `Il y a ${diffHours}h`;
+            } else {
+                return 'Il y a moins d\'1h';
+            }
+        }
+        
+        // ===== CAMPAIGNS/ADS FUNCTIONALITY =====
+        
+        let currentStep = 1;
+        let campaignData = {};
+        
+        // Initialize campaigns functionality
+        function initializeCampaigns() {
+            setupCampaignEventListeners();
+            loadCampaigns();
+            loadSavedAudiencesForCampaigns();
+            loadPagesForCampaigns();
+        }
+        
+        // Setup campaign event listeners
+        function setupCampaignEventListeners() {
+            // Create campaign button
+            document.getElementById('createCampaignBtn').addEventListener('click', showCampaignForm);
+            
+            // Form navigation
+            document.getElementById('nextStepBtn').addEventListener('click', nextStep);
+            document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+            document.getElementById('cancelCampaignBtn').addEventListener('click', hideCampaignForm);
+            document.getElementById('createCampaignSubmitBtn').addEventListener('click', submitCampaign);
+            
+            // Audience type change
+            document.getElementById('audienceType').addEventListener('change', handleAudienceTypeChange);
+            
+            // Character counters
+            setupCharacterCounters();
+            
+            // Media upload
+            setupMediaUpload();
+        }
+        
+        // Show campaign creation form
+        function showCampaignForm() {
+            document.getElementById('campaignCreationForm').style.display = 'block';
+            document.getElementById('campaignsList').style.display = 'none';
+            resetCampaignForm();
+        }
+        
+        // Hide campaign creation form
+        function hideCampaignForm() {
+            document.getElementById('campaignCreationForm').style.display = 'none';
+            document.getElementById('campaignsList').style.display = 'block';
+            resetCampaignForm();
+        }
+        
+        // Reset campaign form
+        function resetCampaignForm() {
+            currentStep = 1;
+            campaignData = {};
+            showStep(1);
+            document.querySelector('.form-container').reset?.();
+        }
+        
+        // Show specific step
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).style.display = 'none';
+            }
+            
+            // Show current step
+            document.getElementById(`step${step}`).style.display = 'block';
+            
+            // Update navigation buttons
+            document.getElementById('prevStepBtn').style.display = step > 1 ? 'block' : 'none';
+            document.getElementById('nextStepBtn').style.display = step < 4 ? 'block' : 'none';
+            document.getElementById('createCampaignSubmitBtn').style.display = step === 4 ? 'block' : 'none';
+            
+            // Update step-specific content
+            if (step === 4) {
+                generateCampaignReview();
+            }
+        }
+        
+        // Next step
+        function nextStep() {
+            if (validateCurrentStep()) {
+                saveCurrentStepData();
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+        
+        // Previous step
+        function prevStep() {
+            currentStep--;
+            showStep(currentStep);
+        }
+        
+        // Validate current step
+        function validateCurrentStep() {
+            const step = currentStep;
+            
+            if (step === 1) {
+                const name = document.getElementById('campaignName').value;
+                const objective = document.getElementById('campaignObjective').value;
+                const budget = document.getElementById('campaignBudget').value;
+                
+                if (!name || !objective || !budget || budget < 10) {
+                    showAlert('Veuillez remplir tous les champs obligatoires de l\'étape 1', 'error');
+                    return false;
+                }
+            } else if (step === 2) {
+                const adsetName = document.getElementById('adsetName').value;
+                const audienceType = document.getElementById('audienceType').value;
+                const dailyBudget = document.getElementById('dailyBudget').value;
+                const startDate = document.getElementById('startDate').value;
+                
+                if (!adsetName || !audienceType || !dailyBudget || !startDate || dailyBudget < 5) {
+                    showAlert('Veuillez remplir tous les champs obligatoires de l\'étape 2', 'error');
+                    return false;
+                }
+                
+                if (audienceType === 'saved') {
+                    const savedAudience = document.getElementById('savedAudience').value;
+                    if (!savedAudience) {
+                        showAlert('Veuillez sélectionner une audience sauvegardée', 'error');
+                        return false;
+                    }
+                }
+            } else if (step === 3) {
+                const adName = document.getElementById('adName').value;
+                const adFormat = document.getElementById('adFormat').value;
+                const adPage = document.getElementById('adPage').value;
+                const adHeadline = document.getElementById('adHeadline').value;
+                const adText = document.getElementById('adText').value;
+                const adDescription = document.getElementById('adDescription').value;
+                const callToAction = document.getElementById('callToAction').value;
+                
+                if (!adName || !adFormat || !adPage || !adHeadline || !adText || !adDescription || !callToAction) {
+                    showAlert('Veuillez remplir tous les champs obligatoires de l\'étape 3', 'error');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Save current step data
+        function saveCurrentStepData() {
+            if (currentStep === 1) {
+                campaignData.campaign = {
+                    name: document.getElementById('campaignName').value,
+                    objective: document.getElementById('campaignObjective').value,
+                    budget: parseFloat(document.getElementById('campaignBudget').value)
+                };
+            } else if (currentStep === 2) {
+                campaignData.adset = {
+                    name: document.getElementById('adsetName').value,
+                    audienceType: document.getElementById('audienceType').value,
+                    dailyBudget: parseFloat(document.getElementById('dailyBudget').value),
+                    startDate: document.getElementById('startDate').value,
+                    endDate: document.getElementById('endDate').value || null
+                };
+                
+                if (campaignData.adset.audienceType === 'saved') {
+                    campaignData.adset.savedAudience = document.getElementById('savedAudience').value;
+                } else if (campaignData.adset.audienceType === 'custom') {
+                    campaignData.adset.targeting = {
+                        location: document.getElementById('location').value,
+                        radius: parseInt(document.getElementById('radius').value) || null,
+                        ageMin: parseInt(document.getElementById('ageMin').value),
+                        ageMax: parseInt(document.getElementById('ageMax').value),
+                        gender: document.getElementById('gender').value,
+                        interests: document.getElementById('interests').value.split(',').map(i => i.trim()).filter(i => i)
+                    };
+                }
+            } else if (currentStep === 3) {
+                campaignData.ad = {
+                    name: document.getElementById('adName').value,
+                    format: document.getElementById('adFormat').value,
+                    pageId: document.getElementById('adPage').value,
+                    headline: document.getElementById('adHeadline').value,
+                    text: document.getElementById('adText').value,
+                    description: document.getElementById('adDescription').value,
+                    url: document.getElementById('adUrl').value || null,
+                    callToAction: document.getElementById('callToAction').value
+                };
+            }
+        }
+        
+        // Handle audience type change
+        function handleAudienceTypeChange() {
+            const audienceType = document.getElementById('audienceType').value;
+            
+            document.getElementById('savedAudienceSelect').style.display = 
+                audienceType === 'saved' ? 'block' : 'none';
+            document.getElementById('customAudienceForm').style.display = 
+                audienceType === 'custom' ? 'block' : 'none';
+        }
+        
+        // Setup character counters
+        function setupCharacterCounters() {
+            const fields = [
+                { id: 'adHeadline', max: 40 },
+                { id: 'adText', max: 125 },
+                { id: 'adDescription', max: 30 }
+            ];
+            
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const counter = element.parentNode.querySelector('.char-counter');
+                
+                element.addEventListener('input', () => {
+                    const length = element.value.length;
+                    counter.textContent = `${length}/${field.max}`;
+                    counter.style.color = length > field.max ? '#e74c3c' : '#7f8c8d';
+                });
+            });
+        }
+        
+        // Setup media upload
+        function setupMediaUpload() {
+            const uploadArea = document.getElementById('adMediaUpload');
+            const preview = document.getElementById('adMediaPreview');
+            
+            uploadArea.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*,video/*';
+                input.multiple = true;
+                input.onchange = handleMediaFiles;
+                input.click();
+            });
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.background = '#f0f8ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.background = '';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.background = '';
+                handleMediaFiles({ target: { files: e.dataTransfer.files } });
+            });
+        }
+        
+        // Handle media files
+        function handleMediaFiles(event) {
+            const files = Array.from(event.target.files);
+            const preview = document.getElementById('adMediaPreview');
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const mediaElement = file.type.startsWith('image/') ?
+                            `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px;">` :
+                            `<video src="${e.target.result}" controls style="max-width: 200px; max-height: 200px;"></video>`;
+                        
+                        preview.innerHTML += `
+                            <div class="media-item" style="display: inline-block; margin: 10px; position: relative;">
+                                ${mediaElement}
+                                <button onclick="this.parentNode.remove()" style="position: absolute; top: 5px; right: 5px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+                            </div>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Generate campaign review
+        function generateCampaignReview() {
+            const summary = document.getElementById('campaignSummary');
+            const adPreview = document.getElementById('adPreview');
+            const estimate = document.getElementById('performanceEstimate');
+            
+            // Campaign summary
+            summary.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>Campagne:</strong> ${campaignData.campaign?.name || 'N/A'}<br>
+                    <strong>Objectif:</strong> ${campaignData.campaign?.objective || 'N/A'}<br>
+                    <strong>Budget total:</strong> ${campaignData.campaign?.budget || 0}€
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>Groupe d'annonces:</strong> ${campaignData.adset?.name || 'N/A'}<br>
+                    <strong>Budget quotidien:</strong> ${campaignData.adset?.dailyBudget || 0}€<br>
+                    <strong>Période:</strong> ${campaignData.adset?.startDate || 'N/A'} - ${campaignData.adset?.endDate || 'Continue'}
+                </div>
+                <div>
+                    <strong>Annonce:</strong> ${campaignData.ad?.name || 'N/A'}<br>
+                    <strong>Format:</strong> ${campaignData.ad?.format || 'N/A'}<br>
+                    <strong>Action:</strong> ${campaignData.ad?.callToAction || 'N/A'}
+                </div>
+            `;
+            
+            // Ad preview
+            adPreview.innerHTML = `
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; max-width: 350px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">${campaignData.ad?.headline || 'Titre'}</div>
+                    <div style="margin-bottom: 10px; color: #666;">${campaignData.ad?.text || 'Texte de l\'annonce'}</div>
+                    <div style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                        [Média de l'annonce]
+                    </div>
+                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">${campaignData.ad?.description || 'Description'}</div>
+                    <button style="background: #1877f2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                        ${campaignData.ad?.callToAction || 'Action'}
+                    </button>
+                </div>
+            `;
+            
+            // Performance estimate
+            const dailyBudget = campaignData.adset?.dailyBudget || 0;
+            const estimatedReach = Math.round(dailyBudget * 50); // Rough estimate
+            const estimatedClicks = Math.round(dailyBudget * 2);
+            const estimatedCPC = dailyBudget > 0 ? (dailyBudget / estimatedClicks).toFixed(2) : '0.00';
+            
+            estimate.innerHTML = `
+                <div class="estimate-metric">
+                    <div class="estimate-value">${estimatedReach}</div>
+                    <div class="estimate-label">Portée estimée/jour</div>
+                </div>
+                <div class="estimate-metric">
+                    <div class="estimate-value">${estimatedClicks}</div>
+                    <div class="estimate-label">Clics estimés/jour</div>
+                </div>
+                <div class="estimate-metric">
+                    <div class="estimate-value">${estimatedCPC}€</div>
+                    <div class="estimate-label">CPC estimé</div>
+                </div>
+            `;
+        }
+        
+        // Submit campaign
+        async function submitCampaign() {
+            try {
+                saveCurrentStepData();
+                
+                const response = await fetch('/api/facebook/campaigns/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(campaignData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Campagne créée avec succès !', 'success');
+                    hideCampaignForm();
+                    loadCampaigns();
+                } else {
+                    showAlert('Erreur lors de la création de la campagne: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error creating campaign:', error);
+                showAlert('Erreur lors de la création de la campagne', 'error');
+            }
+        }
+        
+        // Load campaigns
+        async function loadCampaigns() {
+            try {
+                const response = await fetch('/api/facebook/campaigns');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCampaignsTable(data.campaigns || []);
+                } else {
+                    document.getElementById('campaignsTableBody').innerHTML = 
+                        '<div class="loading-campaigns">Erreur lors du chargement des campagnes</div>';
+                }
+            } catch (error) {
+                console.error('Error loading campaigns:', error);
+                document.getElementById('campaignsTableBody').innerHTML = 
+                    '<div class="loading-campaigns">Erreur lors du chargement des campagnes</div>';
+            }
+        }
+        
+        // Update campaigns table
+        function updateCampaignsTable(campaigns) {
+            const tbody = document.getElementById('campaignsTableBody');
+            
+            if (campaigns.length === 0) {
+                tbody.innerHTML = '<div class="loading-campaigns">Aucune campagne trouvée</div>';
+                return;
+            }
+            
+            tbody.innerHTML = campaigns.map(campaign => `
+                <div class="campaign-row">
+                    <div class="table-cell">
+                        <div class="campaign-name">${campaign.name}</div>
+                        <div class="campaign-objective">${campaign.objective}</div>
+                    </div>
+                    <div class="table-cell">
+                        <span class="status-badge status-${campaign.status.toLowerCase()}">${campaign.status}</span>
+                    </div>
+                    <div class="table-cell">${campaign.budget}€</div>
+                    <div class="table-cell">${formatNumber(campaign.reach || 0)}</div>
+                    <div class="table-cell">${formatNumber(campaign.clicks || 0)}</div>
+                    <div class="table-cell">${campaign.cpc || '0.00'}€</div>
+                    <div class="table-cell">
+                        <div class="campaign-actions">
+                            <button class="action-btn edit" onclick="editCampaign('${campaign.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn pause" onclick="toggleCampaign('${campaign.id}', '${campaign.status}')">
+                                <i class="fas fa-${campaign.status === 'ACTIVE' ? 'pause' : 'play'}"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="deleteCampaign('${campaign.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load saved audiences for campaigns
+        async function loadSavedAudiencesForCampaigns() {
+            try {
+                const response = await fetch('/api/facebook/audiences');
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('savedAudience');
+                    
+                    select.innerHTML = '<option value="">Sélectionner une audience...</option>' +
+                        data.audiences.map(audience => 
+                            `<option value="${audience.id}">${audience.name}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading saved audiences:', error);
+            }
+        }
+        
+        // Load pages for campaigns
+        async function loadPagesForCampaigns() {
+            try {
+                const response = await fetch('/api/facebook/pages/publishing');
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('adPage');
+                    
+                    select.innerHTML = '<option value="">Sélectionner une page...</option>' +
+                        data.pages.map(page => 
+                            `<option value="${page.id}">${page.name}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading pages:', error);
+            }
+        }
+        
+        // Campaign actions
+        function editCampaign(campaignId) {
+            showAlert('Fonction d\'édition en cours de développement', 'info');
+        }
+        
+        function toggleCampaign(campaignId, currentStatus) {
+            const newStatus = currentStatus === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
+            showAlert(`Campagne ${newStatus === 'ACTIVE' ? 'activée' : 'mise en pause'}`, 'success');
+            loadCampaigns();
+        }
+        
+        function deleteCampaign(campaignId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette campagne ?')) {
+                showAlert('Campagne supprimée', 'success');
+                loadCampaigns();
+            }
+        }
+    </script>
+</body>
+</html>
+
