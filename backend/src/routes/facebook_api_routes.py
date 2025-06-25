@@ -110,7 +110,7 @@ def bulk_publish():
         
         # 🔧 PATCH: Bloquer combinaison LINK + MEDIA selon instructions
         if link and (images or video):
-            logger.warning("❌ BLOCKED: Cannot combine link with media (images/video)")
+            current_app.logger.warning("❌ BLOCKED: Cannot combine link with media (images/video)")
             return jsonify({
                 'error': 'Cannot combine link with media. Please choose either link OR media, not both.',
                 'code': 'LINK_MEDIA_CONFLICT'
@@ -432,6 +432,14 @@ def publish_to_multiple_pages():
                     media_path = os.path.join(upload_dir, filename)
                     media_file.save(media_path)
                     media_paths.append(media_path)
+        
+        # 🔧 PATCH: Bloquer combinaison LINK + MEDIA selon instructions
+        if link and media_paths:
+            current_app.logger.warning("❌ BLOCKED: Cannot combine link with media files")
+            return jsonify({
+                'error': 'Cannot combine link with media. Please choose either link OR media, not both.',
+                'code': 'LINK_MEDIA_CONFLICT'
+            }), 400
         
         # Publish to multiple pages
         results = api.publish_to_multiple_pages(
