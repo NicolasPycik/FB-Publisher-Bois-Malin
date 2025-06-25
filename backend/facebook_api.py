@@ -16,9 +16,13 @@ import requests
 from typing import Dict, List, Any, Optional, Union
 from dotenv import load_dotenv
 
-# Configure logging
+# Load environment variables first
+load_dotenv()
+
+# Configure logging with level from environment
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, log_level),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("facebook_api.log"),
@@ -26,9 +30,7 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger("facebook_api")
-
-# Load environment variables
-load_dotenv()
+logger.setLevel(getattr(logging, log_level))
 
 class FacebookAPIError(Exception):
     """Custom exception for Facebook API errors"""
@@ -57,9 +59,9 @@ class FacebookAPI:
         Args:
             app_id: Facebook App ID (from .env if not provided)
             app_secret: Facebook App Secret (from .env if not provided)
-            access_token: Access token (optional)
+            access_token: Access token (from .env if not provided)
         """
-        self.access_token = access_token
+        self.access_token = access_token or os.getenv("FACEBOOK_ACCESS_TOKEN") or os.getenv("ACCESS_TOKEN")
         self.app_id = app_id or os.getenv("FACEBOOK_APP_ID") or os.getenv("APP_ID")
         self.app_secret = app_secret or os.getenv("FACEBOOK_APP_SECRET") or os.getenv("APP_SECRET")
         
@@ -106,6 +108,14 @@ class FacebookAPI:
         safe_params = {k: v for k, v in params.items() if k != "access_token"}
         logger.info(f"API Request: {method} {url} - Params: {safe_params}")
         
+        # DEBUG: Log détaillé de la requête complète
+        logger.debug(f"🔍 DEBUG _make_request - Method: {method}")
+        logger.debug(f"🔍 DEBUG _make_request - Full URL: {url}")
+        logger.debug(f"🔍 DEBUG _make_request - Params: {params}")
+        logger.debug(f"🔍 DEBUG _make_request - Data: {data}")
+        logger.debug(f"🔍 DEBUG _make_request - Files: {files}")
+        logger.debug(f"🔍 DEBUG _make_request - Access Token: {token[:20] if token else 'None'}...")
+        
         retry_count = 0
         while True:
             try:
@@ -120,12 +130,14 @@ class FacebookAPI:
                 
                 # Log response status
                 logger.info(f"API Response: {response.status_code}")
+                logger.debug(f"🔍 DEBUG _make_request - Response Status: {response.status_code}")
+                logger.debug(f"🔍 DEBUG _make_request - Response Headers: {dict(response.headers)}")
                 
                 # Parse JSON response
                 response_data = response.json()
                 
                 # Log full response for debugging (excluding sensitive data)
-                logger.debug(f"API Response data: {json.dumps(response_data)}")
+                logger.debug(f"🔍 DEBUG _make_request - Response JSON: {json.dumps(response_data, indent=2)}")
                 
                 # Check for API errors
                 if "error" in response_data:
@@ -134,7 +146,8 @@ class FacebookAPI:
                     error_code = error.get("code")
                     error_subcode = error.get("error_subcode")
                     
-                    logger.error(f"Facebook API error: {error_msg} (Code: {error_code}, Subcode: {error_subcode})")
+                    logger.error(f"❌ Facebook API error: {error_msg} (Code: {error_code}, Subcode: {error_subcode})")
+                    logger.debug(f"🔍 DEBUG _make_request - Full Error: {json.dumps(error, indent=2)}")
                     
                     # Check if we should retry (server errors)
                     if 500 <= response.status_code < 600 and retry_count < max_retries:
@@ -228,22 +241,33 @@ class FacebookAPI:
         try:
             page_token = self._get_page_token(page_id)
             logger.info(f"Publishing post to page {page_id} with page token")
+            logger.debug(f"Page token for {page_id}: {page_token[:20]}...")
             
             params = {"message": message}
             if link:
                 params["link"] = link
             
+            # DEBUG: Log détaillé de la requête
+            url = f"/{page_id}/feed"
+            logger.debug(f"🔍 DEBUG PUBLICATION - URL: {url}")
+            logger.debug(f"🔍 DEBUG PUBLICATION - Params: {params}")
+            logger.debug(f"🔍 DEBUG PUBLICATION - Access Token: {page_token[:20]}...")
+            
             response = self._make_request(
                 "POST", 
-                f"/{page_id}/feed", 
+                url, 
                 params=params,
                 access_token=page_token
             )
             
+            # DEBUG: Log détaillé de la réponse
+            logger.debug(f"🔍 DEBUG PUBLICATION - Response: {response}")
+            
             if "id" not in response:
+                logger.error(f"❌ No post ID in response: {response}")
                 raise FacebookAPIError("No post ID returned from Facebook API")
             
-            logger.info(f"Post published successfully: {response['id']}")
+            logger.info(f"✅ Post published successfully: {response['id']}")
             return response["id"]
             
         except ValueError as e:
@@ -272,10 +296,11 @@ class FacebookAPI:
         try:
             page_token = self._get_page_token(page_id)
             logger.info(f"Publishing post with {len(files)} photos to page {page_id}")
+            logger.debug(f"🔍 DEBUG PHOTOS - Page Token: {page_token[:20]}...")
             
             media_ids = []
             for path in files:
-                logger.debug(f"Uploading photo: {path}")
+                logger.debug(f"🔍 DEBUG PHOTOS - Uploading photo: {path}")
                 
                 response = self._make_request(
                     "POST",
@@ -285,16 +310,25 @@ class FacebookAPI:
                     access_token=page_token
                 )
                 
+                logger.debug(f"🔍 DEBUG PHOTOS - Upload response: {response}")
+                
                 if "id" not in response:
                     raise FacebookAPIError(f"Failed to upload photo: {path}")
                 
                 media_ids.append({"media_fbid": response["id"]})
+                logger.debug(f"🔍 DEBUG PHOTOS - Media ID added: {response['id']}")
+            
+            # 🔧 PATCH: attached_media doit être json.dumps(list) selon instructions
+            attached_media_json = json.dumps(media_ids)
+            logger.debug(f"🔍 DEBUG PHOTOS - Attached media JSON: {attached_media_json}")
             
             # Publish post with attached media
             data = {
                 "message": message,
-                "attached_media": json.dumps(media_ids)
+                "attached_media": attached_media_json
             }
+            
+            logger.debug(f"🔍 DEBUG PHOTOS - Final data: {data}")
             
             response = self._make_request(
                 "POST",
@@ -303,10 +337,12 @@ class FacebookAPI:
                 access_token=page_token
             )
             
+            logger.debug(f"🔍 DEBUG PHOTOS - Final response: {response}")
+            
             if "id" not in response:
                 raise FacebookAPIError("No post ID returned from Facebook API")
             
-            logger.info(f"Post with photos published successfully: {response['id']}")
+            logger.info(f"✅ Post with photos published successfully: {response['id']}")
             return response["id"]
             
         except ValueError as e:
@@ -335,9 +371,13 @@ class FacebookAPI:
         try:
             page_token = self._get_page_token(page_id)
             logger.info(f"Publishing post with video to page {page_id}")
+            logger.debug(f"🔍 DEBUG VIDEO - Page Token: {page_token[:20]}...")
+            logger.debug(f"🔍 DEBUG VIDEO - Video path: {video_path}")
             
-            # Upload video
+            # 🔧 PATCH: Vidéos : endpoint /{page_id}/videos + files={"source": open(...)} selon instructions
             with open(video_path, "rb") as video_file:
+                logger.debug(f"🔍 DEBUG VIDEO - Uploading to /{page_id}/videos")
+                
                 response = self._make_request(
                     "POST",
                     f"/{page_id}/videos",
@@ -346,10 +386,12 @@ class FacebookAPI:
                     access_token=page_token
                 )
             
+            logger.debug(f"🔍 DEBUG VIDEO - Upload response: {response}")
+            
             if "id" not in response:
                 raise FacebookAPIError("No video ID returned from Facebook API")
             
-            logger.info(f"Video published successfully: {response['id']}")
+            logger.info(f"✅ Video published successfully: {response['id']}")
             return response["id"]
             
         except ValueError as e:
@@ -793,16 +835,14 @@ class FacebookAPI:
                     
                     # Publish post with attached media
                     if media_ids:
-                        result = self.publish_post_with_photos(page_id, message, media_ids, 
+                        result = self.publish_post_with_photo_ids(page_id, message, media_ids, 
                                                              page_access_token=page_token)
                     else:
                         # Fallback to text post if media upload failed
-                        result = self.publish_post(page_id, message, link, 
-                                                 page_access_token=page_token)
+                        result = self.publish_post(page_id, message, link)
                 else:
                     # Publish text/link post
-                    result = self.publish_post(page_id, message, link, 
-                                             page_access_token=page_token)
+                    result = self.publish_post(page_id, message, link)
                 
                 results[page_id] = {
                     "success": True,
@@ -1379,13 +1419,12 @@ class FacebookAPI:
                 result = self.publish_post(
                     page_id=page_id,
                     message=message,
-                    link=link,
-                    page_access_token=page_token
+                    link=link
                 )
                 
                 results[page_id] = {
                     'success': True,
-                    'post_id': result.get('id'),
+                    'post_id': result,
                     'message': 'Post published successfully'
                 }
                 
