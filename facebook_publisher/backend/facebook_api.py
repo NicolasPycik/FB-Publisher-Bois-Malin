@@ -59,13 +59,14 @@ class FacebookAPI:
             app_secret: Facebook App Secret (from .env if not provided)
             access_token: Access token (optional)
         """
-        self.app_id = app_id or os.getenv("APP_ID")
-        self.app_secret = app_secret or os.getenv("APP_SECRET")
-        self.access_token = access_token or os.getenv("SYSTEM_USER_TOKEN")
+        self.access_token = access_token
+        self.app_id = app_id or os.getenv("FACEBOOK_APP_ID") or os.getenv("APP_ID")
+        self.app_secret = app_secret or os.getenv("FACEBOOK_APP_SECRET") or os.getenv("APP_SECRET")
         
-        if not self.app_id or not self.app_secret:
-            logger.error("Missing APP_ID or APP_SECRET in environment variables")
-            raise ValueError("Missing APP_ID or APP_SECRET in environment variables")
+        # Validate required parameters
+        if not self.access_token or not self.app_id or not self.app_secret:
+            logger.error("Missing FACEBOOK_ACCESS_TOKEN, FACEBOOK_APP_ID or FACEBOOK_APP_SECRET in environment variables")
+            raise ValueError("Missing FACEBOOK_ACCESS_TOKEN, FACEBOOK_APP_ID or FACEBOOK_APP_SECRET in environment variables")
         
         logger.info("FacebookAPI initialized")
     
@@ -608,4 +609,561 @@ class FacebookAPI:
         )
         
         return response.get("data", [])
+
+
+    # --- Multi-Page Publishing Methods (v3.0.0) -------------------------
+    
+    def publish_to_multiple_pages(self, page_ids: List[str], message: str, 
+                                 media_paths: Optional[List[str]] = None,
+                                 link: Optional[str] = None) -> Dict[str, Dict]:
+        """
+        Publish a post to multiple Facebook pages simultaneously
+        
+        Args:
+            page_ids: List of Facebook page IDs
+            message: Post message text
+            media_paths: Optional list of media file paths (images/videos)
+            link: Optional link to include
+            
+        Returns:
+            Dictionary with page_id as key and API response as value
+        """
+        results = {}
+        
+        for page_id in page_ids:
+            try:
+                logger.info(f"Publishing to page {page_id}")
+                
+                # Get page-specific access token
+                page_token = self._get_page_token(page_id)
+                
+                if media_paths:
+                    # Upload media first, then publish with media
+                    media_ids = []
+                    for media_path in media_paths:
+                        if self._is_video_file(media_path):
+                            media_response = self.upload_video(page_id, media_path, 
+                                                             description=message, 
+                                                             page_access_token=page_token)
+                        else:
+                            media_response = self.upload_photo(page_id, media_path, 
+                                                             caption=message, 
+                                                             published=False,
+                                                             page_access_token=page_token)
+                        
+                        if "id" in media_response:
+                            media_ids.append(media_response["id"])
+                    
+                    # Publish post with attached media
+                    if media_ids:
+                        result = self.publish_post_with_photos(page_id, message, media_ids, 
+                                                             page_access_token=page_token)
+                    else:
+                        # Fallback to text post if media upload failed
+                        result = self.publish_post(page_id, message, link, 
+                                                 page_access_token=page_token)
+                else:
+                    # Publish text/link post
+                    result = self.publish_post(page_id, message, link, 
+                                             page_access_token=page_token)
+                
+                results[page_id] = {
+                    "success": True,
+                    "data": result,
+                    "message": "Post published successfully"
+                }
+                
+                logger.info(f"Successfully published to page {page_id}")
+                
+            except Exception as e:
+                logger.error(f"Failed to publish to page {page_id}: {str(e)}")
+                results[page_id] = {
+                    "success": False,
+                    "error": str(e),
+                    "message": f"Failed to publish to page {page_id}"
+                }
+        
+        return results
+    
+    def upload_video(self, page_id: str, video_path: str, title: Optional[str] = None,
+                    description: Optional[str] = None, page_access_token: Optional[str] = None) -> Dict:
+        """
+        Upload a video to a Facebook page
+        
+        Args:
+            page_id: ID of the Facebook page
+            video_path: Path to the video file
+            title: Optional video title
+            description: Optional video description
+            page_access_token: Page-specific access token
+            
+        Returns:
+            API response with video ID
+        """
+        params = {}
+        if title:
+            params["title"] = title
+        if description:
+            params["description"] = description
+            
+        with open(video_path, "rb") as video_file:
+            files = {"source": video_file}
+            return self._make_request(
+                "POST",
+                f"/{page_id}/videos",
+                params=params,
+                files=files,
+                access_token=page_access_token
+            )
+    
+    def _is_video_file(self, file_path: str) -> bool:
+        """
+        Check if a file is a video based on its extension
+        
+        Args:
+            file_path: Path to the file
+            
+        Returns:
+            True if file is a video, False otherwise
+        """
+        video_extensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv']
+        return any(file_path.lower().endswith(ext) for ext in video_extensions)
+    
+    def get_all_pages_for_publishing(self) -> List[Dict]:
+        """
+        Get all available pages for publishing with their basic info
+        
+        Returns:
+            List of pages with id, name, fan_count, access_token
+        """
+        try:
+            pages = self.get_all_pages()
+            return [
+                {
+                    "id": page["id"],
+                    "name": page["name"],
+                    "fan_count": page.get("fan_count", 0),
+                    "access_token": page.get("access_token", ""),
+                    "category": page.get("category", ""),
+                    "picture": page.get("picture", {}).get("data", {}).get("url", "")
+                }
+                for page in pages
+            ]
+        except Exception as e:
+            logger.error(f"Error getting pages for publishing: {str(e)}")
+            return []
+
+
+    
+    def create_boosted_post_ad(self, ad_account_id: str, page_id: str, post_id: str,
+                              targeting: dict, budget: int, start_date: str, end_date: str) -> dict:
+        """
+        Create a boosted post ad campaign
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            page_id: Facebook Page ID
+            post_id: Post ID to boost
+            targeting: Targeting dictionary
+            budget: Daily budget in euros
+            start_date: Start date (YYYY-MM-DD)
+            end_date: End date (YYYY-MM-DD)
+            
+        Returns:
+            Dictionary with campaign, adset, and ad IDs
+        """
+        try:
+            # Step 1: Create Campaign
+            campaign_data = {
+                'name': f"Boost Post {post_id}",
+                'objective': 'POST_ENGAGEMENT',
+                'status': 'ACTIVE',
+                'access_token': self.access_token
+            }
+            
+            campaign_response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/campaigns",
+                data=campaign_data
+            )
+            campaign_id = campaign_response.get('id')
+            
+            # Step 2: Create Ad Creative
+            creative_data = {
+                'name': f"Creative for Post {post_id}",
+                'object_story_id': f"{page_id}_{post_id}",
+                'access_token': self.access_token
+            }
+            
+            creative_response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/adcreatives",
+                data=creative_data
+            )
+            creative_id = creative_response.get('id')
+            
+            # Step 3: Create Ad Set
+            adset_data = {
+                'name': f"AdSet for Post {post_id}",
+                'campaign_id': campaign_id,
+                'daily_budget': budget * 100,  # Convert to cents
+                'start_time': f"{start_date}T00:00:00+0000",
+                'end_time': f"{end_date}T23:59:59+0000",
+                'targeting': json.dumps(targeting),
+                'status': 'ACTIVE',
+                'access_token': self.access_token
+            }
+            
+            adset_response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/adsets",
+                data=adset_data
+            )
+            adset_id = adset_response.get('id')
+            
+            # Step 4: Create Ad
+            ad_data = {
+                'name': f"Boost Ad for Post {post_id}",
+                'adset_id': adset_id,
+                'creative': json.dumps({'creative_id': creative_id}),
+                'status': 'ACTIVE',
+                'access_token': self.access_token
+            }
+            
+            ad_response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/ads",
+                data=ad_data
+            )
+            ad_id = ad_response.get('id')
+            
+            return {
+                'campaign_id': campaign_id,
+                'adset_id': adset_id,
+                'creative_id': creative_id,
+                'ad_id': ad_id,
+                'success': True
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating boosted post ad: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def create_saved_audience(self, ad_account_id: str, name: str, targeting_dict: dict) -> dict:
+        """
+        Create a saved audience
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            name: Audience name
+            targeting_dict: Targeting parameters
+            
+        Returns:
+            API response with audience ID
+        """
+        try:
+            audience_data = {
+                'name': name,
+                'targeting': json.dumps(targeting_dict),
+                'access_token': self.access_token
+            }
+            
+            response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/saved_audiences",
+                data=audience_data
+            )
+            
+            return {
+                'success': True,
+                'audience_id': response.get('id'),
+                'name': name
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating saved audience: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def get_saved_audiences(self, ad_account_id: str) -> List[Dict]:
+        """
+        Get all saved audiences for an ad account
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            
+        Returns:
+            List of saved audiences
+        """
+        try:
+            response = self._make_request(
+                "GET",
+                f"/act_{ad_account_id}/saved_audiences",
+                params={
+                    "fields": "id,name,targeting,approximate_count",
+                    "access_token": self.access_token
+                }
+            )
+            
+            if "data" in response:
+                return response["data"]
+            return []
+            
+        except Exception as e:
+            logger.error(f"Error getting saved audiences: {str(e)}")
+            return []
+    
+    def get_ad_accounts(self) -> List[Dict]:
+        """
+        Get all ad accounts accessible by the user
+        
+        Returns:
+            List of ad account objects
+        """
+        try:
+            response = self._make_request(
+                "GET",
+                "/me/adaccounts",
+                params={
+                    "fields": "id,name,account_status,currency",
+                    "access_token": self.access_token
+                }
+            )
+            
+            if "data" in response:
+                return response["data"]
+            return []
+            
+        except Exception as e:
+            logger.error(f"Error getting ad accounts: {str(e)}")
+            return []
+    
+    def create_campaign(self, ad_account_id: str, name: str, objective: str) -> dict:
+        """
+        Create a new campaign
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            name: Campaign name
+            objective: Campaign objective
+            
+        Returns:
+            API response with campaign ID
+        """
+        try:
+            campaign_data = {
+                'name': name,
+                'objective': objective,
+                'status': 'PAUSED',
+                'access_token': self.access_token
+            }
+            
+            response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/campaigns",
+                data=campaign_data
+            )
+            
+            return {
+                'success': True,
+                'campaign_id': response.get('id')
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating campaign: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def create_adset(self, ad_account_id: str, campaign_id: str, name: str, 
+                    daily_budget: int, start_date: str, end_date: str, targeting: dict) -> dict:
+        """
+        Create a new ad set
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            campaign_id: Campaign ID
+            name: AdSet name
+            daily_budget: Daily budget in cents
+            start_date: Start date
+            end_date: End date
+            targeting: Targeting dictionary
+            
+        Returns:
+            API response with adset ID
+        """
+        try:
+            adset_data = {
+                'name': name,
+                'campaign_id': campaign_id,
+                'daily_budget': daily_budget,
+                'start_time': f"{start_date}T00:00:00+0000",
+                'end_time': f"{end_date}T23:59:59+0000",
+                'targeting': json.dumps(targeting),
+                'status': 'PAUSED',
+                'access_token': self.access_token
+            }
+            
+            response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/adsets",
+                data=adset_data
+            )
+            
+            return {
+                'success': True,
+                'adset_id': response.get('id')
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating adset: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def create_ad_creative(self, ad_account_id: str, name: str, page_id: str = None, 
+                          message: str = None, link: str = None, image_hash: str = None) -> dict:
+        """
+        Create an ad creative
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            name: Creative name
+            page_id: Facebook Page ID
+            message: Ad message
+            link: Ad link
+            image_hash: Image hash for creative
+            
+        Returns:
+            API response with creative ID
+        """
+        try:
+            creative_data = {
+                'name': name,
+                'access_token': self.access_token
+            }
+            
+            if page_id and message:
+                object_story_spec = {
+                    'page_id': page_id,
+                    'link_data': {
+                        'message': message
+                    }
+                }
+                
+                if link:
+                    object_story_spec['link_data']['link'] = link
+                
+                if image_hash:
+                    object_story_spec['link_data']['image_hash'] = image_hash
+                
+                creative_data['object_story_spec'] = json.dumps(object_story_spec)
+            
+            response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/adcreatives",
+                data=creative_data
+            )
+            
+            return {
+                'success': True,
+                'creative_id': response.get('id')
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating ad creative: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def create_ad(self, ad_account_id: str, name: str, adset_id: str, creative_id: str) -> dict:
+        """
+        Create a new ad
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            name: Ad name
+            adset_id: AdSet ID
+            creative_id: Creative ID
+            
+        Returns:
+            API response with ad ID
+        """
+        try:
+            ad_data = {
+                'name': name,
+                'adset_id': adset_id,
+                'creative': json.dumps({'creative_id': creative_id}),
+                'status': 'PAUSED',
+                'access_token': self.access_token
+            }
+            
+            response = self._make_request(
+                "POST",
+                f"/act_{ad_account_id}/ads",
+                data=ad_data
+            )
+            
+            return {
+                'success': True,
+                'ad_id': response.get('id')
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating ad: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def upload_image(self, ad_account_id: str, image_path: str) -> dict:
+        """
+        Upload an image for use in ads
+        
+        Args:
+            ad_account_id: Facebook Ad Account ID
+            image_path: Path to image file
+            
+        Returns:
+            API response with image hash
+        """
+        try:
+            with open(image_path, 'rb') as image_file:
+                files = {'filename': image_file}
+                data = {'access_token': self.access_token}
+                
+                response = requests.post(
+                    f"{self.base_url}/act_{ad_account_id}/adimages",
+                    files=files,
+                    data=data
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    if 'images' in result:
+                        image_hash = list(result['images'].keys())[0]
+                        return {
+                            'success': True,
+                            'image_hash': image_hash
+                        }
+                
+                return {
+                    'success': False,
+                    'error': 'Failed to upload image'
+                }
+                
+        except Exception as e:
+            logger.error(f"Error uploading image: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
 

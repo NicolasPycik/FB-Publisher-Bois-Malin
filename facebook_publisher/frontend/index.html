@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Publisher SaaS v3.1.0 - Bois Malin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            flex: 1;
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .page-card.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .page-name {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-followers {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .audience-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .audience-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .audience-item:hover {
+            background: #f8f9fa;
+        }
+
+        .audience-item:last-child {
+            border-bottom: none;
+        }
+
+        .audience-name {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .audience-description {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>📘 Facebook Publisher</h1>
+                <p>Bois Malin v3.1.0</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="publication">
+                        <span class="nav-icon">📝</span>
+                        Publication
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="statistiques">
+                        <span class="nav-icon">📊</span>
+                        Statistiques
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="publicites">
+                        <span class="nav-icon">🎯</span>
+                        Publicités
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="audiences">
+                        <span class="nav-icon">👥</span>
+                        Audiences
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="parametres">
+                        <span class="nav-icon">⚙️</span>
+                        Paramètres
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Section Publication -->
+            <div id="publication" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">Publication Multi-Pages</h2>
+                    <p class="section-subtitle">Publiez simultanément sur une ou toutes vos 65 pages Facebook</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Sélection des Pages</h3>
+                            <p class="card-subtitle">Choisissez les pages sur lesquelles publier</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="synchroniserPages()">🔄 Synchroniser</button>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="selectionnerToutesPages()">Sélectionner toutes (65 pages)</button>
+                        <button class="btn btn-secondary" onclick="deselectionnerToutesPages()">Désélectionner toutes</button>
+                    </div>
+
+                    <div class="pages-grid" id="pagesGrid">
+                        <!-- Pages will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Contenu de la Publication</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" id="messagePublication" rows="4" placeholder="Rédigez votre message..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Médias (Images/Vidéos)</label>
+                        <input type="file" class="form-control" id="mediaUpload" multiple accept="image/*,video/*">
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="publierContenu()">📤 Publier sur les pages sélectionnées</button>
+                        <button class="btn btn-warning" onclick="programmerPublication()">⏰ Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Statistiques -->
+            <div id="statistiques" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Statistiques Multi-Pages</h2>
+                    <p class="section-subtitle">Vue d'ensemble des performances sur vos 65 pages</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">147,460</div>
+                        <div class="stat-label">Portée Totale</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12,625</div>
+                        <div class="stat-label">Engagement Total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">8.6%</div>
+                        <div class="stat-label">Taux d'Engagement Moyen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">65</div>
+                        <div class="stat-label">Pages Actives</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Publications Récentes</h3>
+                    <div id="publicationsRecentes">
+                        <!-- Publications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Publicités -->
+            <div id="publicites" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Publicités Complètes</h2>
+                    <p class="section-subtitle">Créez des campagnes publicitaires sur toutes vos pages</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Nouvelle Campagne Publicitaire</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Objectif de la Campagne</label>
+                        <select class="form-control" id="objectifCampagne">
+                            <option value="REACH">Notoriété - Portée maximale</option>
+                            <option value="TRAFFIC">Trafic - Visites du site web</option>
+                            <option value="ENGAGEMENT">Engagement - Interactions</option>
+                            <option value="CONVERSIONS">Conversions - Ventes</option>
+                            <option value="LEAD_GENERATION">Génération de prospects</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Budget Quotidien (€)</label>
+                        <input type="number" class="form-control" id="budgetQuotidien" min="1" value="20">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Durée (jours)</label>
+                        <input type="number" class="form-control" id="dureeCampagne" min="1" value="7">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Pages Cibles</label>
+                        <select class="form-control" id="pagesCibles">
+                            <option value="all">Toutes les 65 pages</option>
+                            <option value="selected">Pages sélectionnées</option>
+                            <option value="top">Top 10 des pages</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="creerCampagne()">🎯 Créer la Campagne</button>
+                        <button class="btn btn-secondary" onclick="ouvrirBoostPost()">⚡ Boost Post Rapide</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Audiences -->
+            <div id="audiences" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Audiences Sauvegardées</h2>
+                    <p class="section-subtitle">Gérez vos audiences pour les réutiliser dans vos campagnes</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Mes Audiences</h3>
+                            <p class="card-subtitle">Audiences personnalisées réutilisables</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="creerNouvelleAudience()">➕ Nouvelle Audience</button>
+                    </div>
+
+                    <div class="audience-list" id="audiencesList">
+                        <!-- Audiences will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Paramètres -->
+            <div id="parametres" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Paramètres</h2>
+                    <p class="section-subtitle">Configuration de l'application</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Configuration Facebook</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Token d'Accès Facebook</label>
+                        <input type="password" class="form-control" id="facebookToken" placeholder="Votre token d'accès Facebook">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">App ID Facebook</label>
+                        <input type="text" class="form-control" id="facebookAppId" placeholder="Votre App ID Facebook">
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="sauvegarderParametres()">💾 Sauvegarder</button>
+                        <button class="btn btn-secondary" onclick="testerConnexion()">🔗 Tester la Connexion</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Informations Système</h3>
+                    <p><strong>Version:</strong> Facebook Publisher SaaS v3.1.0</p>
+                    <p><strong>Statut:</strong> <span style="color: green;">✅ Opérationnel</span></p>
+                    <p><strong>Pages Connectées:</strong> 65 pages</p>
+                    <p><strong>Dernière Synchronisation:</strong> <span id="derniereSynchro">-</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Boost Post -->
+    <div id="modalBoostPost" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚡ Boost Post</h3>
+                <span class="close-btn" onclick="fermerModal('modalBoostPost')">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Budget (€)</label>
+                <input type="number" class="form-control" id="budgetBoost" min="5" value="20">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Durée (jours)</label>
+                <input type="number" class="form-control" id="dureeBoost" min="1" value="3">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Audience</label>
+                <select class="form-control" id="audienceBoost">
+                    <option value="automatic">Audience Automatique</option>
+                    <option value="custom">Audience Personnalisée</option>
+                    <option value="saved">Audience Sauvegardée</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="confirmerBoost()">⚡ Lancer le Boost</button>
+                <button class="btn btn-secondary" onclick="fermerModal('modalBoostPost')">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nouvelle Audience -->
+    <div id="modalNouvelleAudience" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">👥 Nouvelle Audience</h3>
+                <span class="close-btn" onclick="fermerModal('modalNouvelleAudience')">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nom de l'Audience</label>
+                <input type="text" class="form-control" id="nomAudience" placeholder="Ex: Clients Potentiels Bois">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" id="descriptionAudience" rows="3" placeholder="Description de l'audience..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Âge</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" class="form-control" id="ageMin" placeholder="Min" min="18" value="25">
+                    <input type="number" class="form-control" id="ageMax" placeholder="Max" max="65" value="55">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Centres d'Intérêt</label>
+                <input type="text" class="form-control" id="centresInteret" placeholder="Ex: Bricolage, Jardinage, Décoration">
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="sauvegarderAudience()">💾 Sauvegarder</button>
+                <button class="btn btn-secondary" onclick="fermerModal('modalNouvelleAudience')">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let pagesSelectionnees = [];
+        let toutesLesPages = [];
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links and sections
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            chargerPages();
+            chargerAudiences();
+            chargerPublicationsRecentes();
+            mettreAJourDerniereSynchro();
+        });
+
+        // Gestion des pages
+        function chargerPages() {
+            // Simulation de 65 pages Bois Malin
+            toutesLesPages = [];
+            for (let i = 1; i <= 65; i++) {
+                toutesLesPages.push({
+                    id: `page_${i}`,
+                    nom: `Bois Malin ${i}`,
+                    followers: Math.floor(Math.random() * 5000) + 1000
+                });
+            }
+            afficherPages();
+        }
+
+        function afficherPages() {
+            const grid = document.getElementById('pagesGrid');
+            grid.innerHTML = '';
+            
+            toutesLesPages.forEach(page => {
+                const pageCard = document.createElement('div');
+                pageCard.className = 'page-card';
+                pageCard.onclick = () => togglePageSelection(page.id);
+                
+                pageCard.innerHTML = `
+                    <div class="page-name">${page.nom}</div>
+                    <div class="page-followers">${page.followers.toLocaleString()} followers</div>
+                `;
+                
+                if (pagesSelectionnees.includes(page.id)) {
+                    pageCard.classList.add('selected');
+                }
+                
+                grid.appendChild(pageCard);
+            });
+        }
+
+        function togglePageSelection(pageId) {
+            if (pagesSelectionnees.includes(pageId)) {
+                pagesSelectionnees = pagesSelectionnees.filter(id => id !== pageId);
+            } else {
+                pagesSelectionnees.push(pageId);
+            }
+            afficherPages();
+        }
+
+        function selectionnerToutesPages() {
+            pagesSelectionnees = toutesLesPages.map(page => page.id);
+            afficherPages();
+        }
+
+        function deselectionnerToutesPages() {
+            pagesSelectionnees = [];
+            afficherPages();
+        }
+
+        function synchroniserPages() {
+            alert('Synchronisation des pages en cours...');
+            // Simulation de synchronisation
+            setTimeout(() => {
+                alert('65 pages synchronisées avec succès !');
+                mettreAJourDerniereSynchro();
+            }, 2000);
+        }
+
+        // Publication
+        function publierContenu() {
+            const message = document.getElementById('messagePublication').value;
+            if (!message.trim()) {
+                alert('Veuillez saisir un message');
+                return;
+            }
+            
+            if (pagesSelectionnees.length === 0) {
+                alert('Veuillez sélectionner au moins une page');
+                return;
+            }
+            
+            alert(`Publication en cours sur ${pagesSelectionnees.length} page(s)...`);
+            // Simulation de publication
+            setTimeout(() => {
+                alert('Publication réussie !');
+                document.getElementById('messagePublication').value = '';
+            }, 3000);
+        }
+
+        function programmerPublication() {
+            alert('Fonctionnalité de programmation à venir');
+        }
+
+        // Boost Post
+        function ouvrirBoostPost() {
+            document.getElementById('modalBoostPost').classList.add('active');
+        }
+
+        function confirmerBoost() {
+            const budget = document.getElementById('budgetBoost').value;
+            const duree = document.getElementById('dureeBoost').value;
+            
+            alert(`Boost lancé avec un budget de ${budget}€ pour ${duree} jour(s)`);
+            fermerModal('modalBoostPost');
+        }
+
+        // Campagnes
+        function creerCampagne() {
+            const objectif = document.getElementById('objectifCampagne').value;
+            const budget = document.getElementById('budgetQuotidien').value;
+            const duree = document.getElementById('dureeCampagne').value;
+            const pages = document.getElementById('pagesCibles').value;
+            
+            alert(`Campagne créée !\nObjectif: ${objectif}\nBudget: ${budget}€/jour\nDurée: ${duree} jours\nPages: ${pages}`);
+        }
+
+        // Audiences
+        function chargerAudiences() {
+            const audiencesList = document.getElementById('audiencesList');
+            const audiences = [
+                { nom: 'Bricoleurs Passionnés', description: 'Hommes 25-55 ans intéressés par le bricolage', taille: '45,000' },
+                { nom: 'Décorateurs Maison', description: 'Femmes 30-50 ans passionnées de décoration', taille: '32,000' },
+                { nom: 'Professionnels du Bois', description: 'Artisans et professionnels du secteur', taille: '12,000' }
+            ];
+            
+            audiencesList.innerHTML = '';
+            audiences.forEach(audience => {
+                const item = document.createElement('div');
+                item.className = 'audience-item';
+                item.innerHTML = `
+                    <div class="audience-name">${audience.nom}</div>
+                    <div class="audience-description">${audience.description} - ${audience.taille} personnes</div>
+                `;
+                audiencesList.appendChild(item);
+            });
+        }
+
+        function creerNouvelleAudience() {
+            document.getElementById('modalNouvelleAudience').classList.add('active');
+        }
+
+        function sauvegarderAudience() {
+            const nom = document.getElementById('nomAudience').value;
+            if (!nom.trim()) {
+                alert('Veuillez saisir un nom pour l\'audience');
+                return;
+            }
+            
+            alert('Audience sauvegardée avec succès !');
+            fermerModal('modalNouvelleAudience');
+            chargerAudiences();
+        }
+
+        // Publications récentes
+        function chargerPublicationsRecentes() {
+            const container = document.getElementById('publicationsRecentes');
+            const publications = [
+                { titre: 'Nouvelle collection automne', portee: '12,450', engagement: '1,230' },
+                { titre: 'Promotion planches de bois', portee: '8,760', engagement: '890' },
+                { titre: 'Conseils bricolage', portee: '15,230', engagement: '2,100' }
+            ];
+            
+            container.innerHTML = '';
+            publications.forEach(pub => {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.innerHTML = `
+                    <h4>${pub.titre}</h4>
+                    <p>Portée: ${pub.portee} | Engagement: ${pub.engagement}</p>
+                    <button class="btn btn-warning" onclick="ouvrirBoostPost()">⚡ Booster</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Paramètres
+        function sauvegarderParametres() {
+            alert('Paramètres sauvegardés !');
+        }
+
+        function testerConnexion() {
+            alert('Test de connexion en cours...');
+            setTimeout(() => {
+                alert('Connexion Facebook réussie !');
+            }, 2000);
+        }
+
+        function mettreAJourDerniereSynchro() {
+            document.getElementById('derniereSynchro').textContent = new Date().toLocaleString('fr-FR');
+        }
+
+        // Modales
+        function fermerModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Fermer modal en cliquant à l'extérieur
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
