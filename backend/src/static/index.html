@@ -648,6 +648,13 @@
             console.log('🚀 Début de la publication...');
             showPublishingModal();
 
+            // Timeout pour éviter le blocage
+            const timeoutId = setTimeout(() => {
+                console.error('⏰ Timeout de publication');
+                hidePublishingModal();
+                showAlert('Timeout: La publication prend trop de temps', 'error');
+            }, 30000); // 30 secondes
+
             try {
                 const postData = {
                     message: message,
@@ -668,6 +675,13 @@
                     body: JSON.stringify(postData)
                 });
 
+                // Annuler le timeout si la réponse arrive
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const data = await response.json();
                 console.log('📥 Réponse reçue:', data);
                 
@@ -678,9 +692,10 @@
                     showAlert(data.error || 'Erreur lors de la publication', 'error');
                 }
             } catch (error) {
+                clearTimeout(timeoutId);
                 console.error('❌ Erreur publication:', error);
                 hidePublishingModal();
-                showAlert('Erreur de connexion', 'error');
+                showAlert(`Erreur de connexion: ${error.message}`, 'error');
             }
         }
 
@@ -695,22 +710,33 @@
             document.getElementById('publishingResults').innerHTML = '';
             document.getElementById('closePublishModal').style.display = 'none';
             
-            // Simulate progress
+            // Simulate progress with timeout protection
             let progress = 0;
+            let progressSteps = 0;
+            const maxSteps = 20; // Maximum 10 secondes (20 * 500ms)
+            
             const progressInterval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress > 90) progress = 90;
+                progressSteps++;
+                progress += Math.random() * 15 + 5; // Plus régulier
+                
+                // Ne pas dépasser 85% pour laisser de la place à la vraie réponse
+                if (progress > 85) progress = 85;
                 
                 document.getElementById('publishProgress').style.width = progress + '%';
                 document.getElementById('publishProgressText').textContent = 
-                    progress < 30 ? 'Préparation...' :
-                    progress < 60 ? 'Connexion à Facebook...' :
-                    progress < 90 ? 'Publication en cours...' : 'Finalisation...';
+                    progress < 25 ? 'Préparation...' :
+                    progress < 50 ? 'Connexion à Facebook...' :
+                    progress < 75 ? 'Publication en cours...' : 'Finalisation...';
                 
-                if (progress >= 90) {
+                // Arrêter la simulation après un certain temps ou à 85%
+                if (progress >= 85 || progressSteps >= maxSteps) {
                     clearInterval(progressInterval);
+                    // Si on atteint le timeout sans réponse, on reste à "Finalisation..."
                 }
             }, 500);
+            
+            // Stocker l'interval pour pouvoir l'arrêter depuis d'autres fonctions
+            modal.progressInterval = progressInterval;
         }
 
         // Afficher les résultats de publication
@@ -750,7 +776,15 @@
 
         // Masquer la modal de publication
         function hidePublishingModal() {
-            document.getElementById('publishingModal').style.display = 'none';
+            const modal = document.getElementById('publishingModal');
+            
+            // Nettoyer l'interval de progression s'il existe
+            if (modal.progressInterval) {
+                clearInterval(modal.progressInterval);
+                modal.progressInterval = null;
+            }
+            
+            modal.style.display = 'none';
         }
 
         // Reset du formulaire
