@@ -383,6 +383,291 @@
                 font-size: 24px;
             }
         }
+
+        /* ========================
+           NOUVEAUX STYLES v4.0.0 - Boost Post, Publicités et Statistiques
+           ======================== */
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover {
+            color: #3498db;
+            background: #f8f9fa;
+        }
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #f8f9fa;
+        }
+        .tab-btn i {
+            font-size: 16px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Content Type Sections */
+        .content-type-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        /* Radio Groups */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        .radio-label:hover {
+            background: #f8f9fa;
+        }
+        .radio-label input[type="radio"] {
+            margin: 0;
+        }
+
+        /* Media Preview */
+        .media-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .media-preview img,
+        .media-preview video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        .stat-card:nth-child(1) .stat-icon { background: #3498db; }
+        .stat-card:nth-child(2) .stat-icon { background: #2ecc71; }
+        .stat-card:nth-child(3) .stat-icon { background: #e74c3c; }
+        .stat-card:nth-child(4) .stat-icon { background: #f39c12; }
+        .stat-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-content p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* Stats Filters */
+        .stats-filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .stats-filters .form-row {
+            align-items: end;
+        }
+
+        /* Table Responsive */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Campaign Cards */
+        .campaign-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .campaign-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .campaign-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .campaign-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .campaign-status.active { background: #d4edda; color: #155724; }
+        .campaign-status.paused { background: #fff3cd; color: #856404; }
+        .campaign-status.completed { background: #f8d7da; color: #721c24; }
+        .campaign-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .campaign-metric {
+            text-align: center;
+        }
+        .campaign-metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+        }
+        .campaign-metric-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .campaign-actions .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design pour les nouvelles sections */
+        @media (max-width: 768px) {
+            .tabs-nav {
+                flex-direction: column;
+            }
+            .tab-btn {
+                justify-content: center;
+                padding: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .campaign-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .campaign-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .stats-filters .form-row {
+                flex-direction: column;
+            }
+            .stats-filters .form-group {
+                margin-bottom: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -557,17 +842,632 @@
                 <!-- Ads Section -->
                 <section id="ads" class="section">
                     <div class="section-header">
-                        <h1 class="section-title">Publicités</h1>
+                        <h1 class="section-title">Publicités & Boost Post</h1>
+                        <p class="section-description">Créez des campagnes publicitaires et boostez vos publications existantes</p>
                     </div>
-                    <p>Section des publicités en cours de développement.</p>
+
+                    <!-- Tabs Navigation -->
+                    <div class="tabs-nav" style="margin-bottom: 30px;">
+                        <button class="tab-btn active" data-tab="boost">
+                            <i class="fas fa-rocket"></i> Boost Post
+                        </button>
+                        <button class="tab-btn" data-tab="create-ad">
+                            <i class="fas fa-plus-circle"></i> Créer Publicité
+                        </button>
+                        <button class="tab-btn" data-tab="campaigns">
+                            <i class="fas fa-list"></i> Mes Campagnes
+                        </button>
+                    </div>
+
+                    <!-- Boost Post Tab -->
+                    <div id="boost-tab" class="tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-rocket"></i> Booster une publication</h3>
+                                <p>Sponsorisez une publication existante pour augmenter sa portée</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="boost-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="boost-account"><i class="fas fa-credit-card"></i> Compte publicitaire :</label>
+                                            <select id="boost-account" class="form-control" required>
+                                                <option value="">Sélectionner un compte...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="boost-page"><i class="fas fa-facebook"></i> Page Facebook :</label>
+                                            <select id="boost-page" class="form-control" required>
+                                                <option value="">Sélectionner une page...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="boost-post-id"><i class="fas fa-link"></i> ID de la publication :</label>
+                                        <input type="text" id="boost-post-id" class="form-control" 
+                                               placeholder="Ex: 123456789_987654321" required>
+                                        <small class="form-text">Trouvez l'ID dans l'URL de votre publication Facebook</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="boost-name"><i class="fas fa-tag"></i> Nom de la campagne :</label>
+                                        <input type="text" id="boost-name" class="form-control" 
+                                               placeholder="Ex: Boost Post Été 2025" required>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="boost-budget"><i class="fas fa-euro-sign"></i> Budget quotidien (€) :</label>
+                                            <input type="number" id="boost-budget" class="form-control" 
+                                                   min="1" max="1000" value="20" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="boost-duration"><i class="fas fa-calendar"></i> Durée (jours) :</label>
+                                            <input type="number" id="boost-duration" class="form-control" 
+                                                   min="1" max="30" value="7" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="boost-start"><i class="fas fa-play"></i> Date de début :</label>
+                                            <input type="datetime-local" id="boost-start" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="boost-end"><i class="fas fa-stop"></i> Date de fin :</label>
+                                            <input type="datetime-local" id="boost-end" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label><i class="fas fa-users"></i> Audience :</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="boost-audience" value="automatic" checked>
+                                                <span>Audience automatique (recommandé)</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="boost-audience" value="saved">
+                                                <span>Audience sauvegardée</span>
+                                            </label>
+                                        </div>
+                                        <select id="boost-saved-audience" class="form-control" style="display: none; margin-top: 10px;">
+                                            <option value="">Sélectionner une audience...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-rocket"></i> Lancer le Boost
+                                        </button>
+                                        <button type="reset" class="btn btn-secondary">
+                                            <i class="fas fa-undo"></i> Réinitialiser
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Ad Tab -->
+                    <div id="create-ad-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-plus-circle"></i> Créer une nouvelle publicité</h3>
+                                <p>Créez une campagne publicitaire complète avec vos propres visuels</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="create-ad-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ad-account"><i class="fas fa-credit-card"></i> Compte publicitaire :</label>
+                                            <select id="ad-account" class="form-control" required>
+                                                <option value="">Sélectionner un compte...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ad-page"><i class="fas fa-facebook"></i> Page Facebook :</label>
+                                            <select id="ad-page" class="form-control" required>
+                                                <option value="">Sélectionner une page...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ad-name"><i class="fas fa-tag"></i> Nom de la campagne :</label>
+                                        <input type="text" id="ad-name" class="form-control" 
+                                               placeholder="Ex: Campagne Produits Été 2025" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ad-objective"><i class="fas fa-target"></i> Objectif :</label>
+                                        <select id="ad-objective" class="form-control" required>
+                                            <option value="TRAFFIC">Trafic vers le site web</option>
+                                            <option value="POST_ENGAGEMENT">Engagement sur la publication</option>
+                                            <option value="CONVERSIONS">Conversions</option>
+                                            <option value="REACH">Portée</option>
+                                            <option value="BRAND_AWARENESS">Notoriété de la marque</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label><i class="fas fa-image"></i> Type de contenu :</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="ad-content-type" value="existing-post" checked>
+                                                <span>Publication existante</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="ad-content-type" value="new-creative">
+                                                <span>Nouveau visuel</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Existing Post Content -->
+                                    <div id="existing-post-content" class="content-type-section">
+                                        <div class="form-group">
+                                            <label for="ad-post-id"><i class="fas fa-link"></i> ID de la publication :</label>
+                                            <input type="text" id="ad-post-id" class="form-control" 
+                                                   placeholder="Ex: 123456789_987654321">
+                                        </div>
+                                    </div>
+
+                                    <!-- New Creative Content -->
+                                    <div id="new-creative-content" class="content-type-section" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="ad-message"><i class="fas fa-edit"></i> Message de la publicité :</label>
+                                            <textarea id="ad-message" class="form-control textarea" 
+                                                      placeholder="Rédigez le message de votre publicité..."></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ad-media"><i class="fas fa-upload"></i> Visuel (image/vidéo) :</label>
+                                            <input type="file" id="ad-media" class="form-control" 
+                                                   accept="image/*,video/*">
+                                            <small class="form-text">Formats supportés: JPG, PNG, MP4, MOV (max 50MB)</small>
+                                        </div>
+                                        <div id="ad-media-preview" class="media-preview" style="display: none;"></div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ad-budget"><i class="fas fa-euro-sign"></i> Budget quotidien (€) :</label>
+                                            <input type="number" id="ad-budget" class="form-control" 
+                                                   min="1" max="1000" value="30" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ad-duration"><i class="fas fa-calendar"></i> Durée (jours) :</label>
+                                            <input type="number" id="ad-duration" class="form-control" 
+                                                   min="1" max="30" value="14" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ad-start"><i class="fas fa-play"></i> Date de début :</label>
+                                            <input type="datetime-local" id="ad-start" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ad-end"><i class="fas fa-stop"></i> Date de fin :</label>
+                                            <input type="datetime-local" id="ad-end" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label><i class="fas fa-users"></i> Audience :</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="ad-audience" value="automatic" checked>
+                                                <span>Audience automatique</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="ad-audience" value="saved">
+                                                <span>Audience sauvegardée</span>
+                                            </label>
+                                        </div>
+                                        <select id="ad-saved-audience" class="form-control" style="display: none; margin-top: 10px;">
+                                            <option value="">Sélectionner une audience...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-plus-circle"></i> Créer la Publicité
+                                        </button>
+                                        <button type="reset" class="btn btn-secondary">
+                                            <i class="fas fa-undo"></i> Réinitialiser
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campaigns Tab -->
+                    <div id="campaigns-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-list"></i> Mes Campagnes</h3>
+                                <p>Gérez vos campagnes publicitaires actives</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="campaigns-filters" style="margin-bottom: 20px;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <select id="campaigns-status-filter" class="form-control">
+                                                <option value="">Tous les statuts</option>
+                                                <option value="ACTIVE">Actives</option>
+                                                <option value="PAUSED">En pause</option>
+                                                <option value="COMPLETED">Terminées</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <button id="refresh-campaigns" class="btn btn-secondary">
+                                                <i class="fas fa-sync"></i> Actualiser
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="campaigns-list" class="campaigns-list">
+                                    <p class="text-center" style="color: #7f8c8d; padding: 40px;">
+                                        <i class="fas fa-bullhorn" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                                        Aucune campagne trouvée.<br>
+                                        Créez votre première campagne avec les onglets ci-dessus.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Analytics Section -->
                 <section id="analytics" class="section">
                     <div class="section-header">
-                        <h1 class="section-title">Statistiques</h1>
+                        <h1 class="section-title">Statistiques & Insights</h1>
+                        <p class="section-description">Analysez les performances de vos pages et publicités</p>
                     </div>
-                    <p>Section des statistiques en cours de développement.</p>
+
+                    <!-- Analytics Tabs Navigation -->
+                    <div class="tabs-nav" style="margin-bottom: 30px;">
+                        <button class="tab-btn active" data-tab="pages-stats">
+                            <i class="fas fa-facebook"></i> Pages
+                        </button>
+                        <button class="tab-btn" data-tab="ads-stats">
+                            <i class="fas fa-bullhorn"></i> Publicités
+                        </button>
+                        <button class="tab-btn" data-tab="campaigns-stats">
+                            <i class="fas fa-chart-line"></i> Campagnes
+                        </button>
+                    </div>
+
+                    <!-- Pages Stats Tab -->
+                    <div id="pages-stats-tab" class="tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-facebook"></i> Statistiques des Pages</h3>
+                                <p>Analysez les performances de vos pages Facebook</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="stats-filters" style="margin-bottom: 20px;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pages-stats-period">Période :</label>
+                                            <select id="pages-stats-period" class="form-control">
+                                                <option value="last_7d">7 derniers jours</option>
+                                                <option value="last_30d" selected>30 derniers jours</option>
+                                                <option value="last_90d">90 derniers jours</option>
+                                                <option value="lifetime">Depuis le début</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="pages-stats-page">Page :</label>
+                                            <select id="pages-stats-page" class="form-control">
+                                                <option value="">Toutes les pages</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <button id="load-pages-stats" class="btn btn-primary">
+                                                <i class="fas fa-sync"></i> Charger
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pages Stats Summary -->
+                                <div id="pages-stats-summary" class="stats-summary" style="display: none;">
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-eye"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="pages-reach">-</h4>
+                                                <p>Portée</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="pages-impressions">-</h4>
+                                                <p>Impressions</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-heart"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="pages-engagement">-</h4>
+                                                <p>Engagement</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-user-plus"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="pages-followers">-</h4>
+                                                <p>Nouveaux abonnés</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pages Stats Details -->
+                                <div id="pages-stats-details" class="stats-details" style="display: none;">
+                                    <h4>Détails par page</h4>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Page</th>
+                                                    <th>Portée</th>
+                                                    <th>Impressions</th>
+                                                    <th>Engagement</th>
+                                                    <th>Nouveaux abonnés</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="pages-stats-table">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="pages-stats-loading" class="text-center" style="display: none; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3498db;"></i>
+                                    <p style="margin-top: 15px;">Chargement des statistiques...</p>
+                                </div>
+
+                                <div id="pages-stats-empty" class="text-center" style="color: #7f8c8d; padding: 40px;">
+                                    <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                                    Sélectionnez une période et cliquez sur "Charger" pour voir les statistiques.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ads Stats Tab -->
+                    <div id="ads-stats-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-bullhorn"></i> Statistiques des Publicités</h3>
+                                <p>Analysez les performances de vos publicités</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="stats-filters" style="margin-bottom: 20px;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ads-stats-period">Période :</label>
+                                            <select id="ads-stats-period" class="form-control">
+                                                <option value="last_7d">7 derniers jours</option>
+                                                <option value="last_30d" selected>30 derniers jours</option>
+                                                <option value="last_90d">90 derniers jours</option>
+                                                <option value="lifetime">Depuis le début</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ads-stats-account">Compte publicitaire :</label>
+                                            <select id="ads-stats-account" class="form-control">
+                                                <option value="">Sélectionner un compte...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <button id="load-ads-stats" class="btn btn-primary">
+                                                <i class="fas fa-sync"></i> Charger
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ads Stats Summary -->
+                                <div id="ads-stats-summary" class="stats-summary" style="display: none;">
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-euro-sign"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="ads-spend">-</h4>
+                                                <p>Dépenses</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-eye"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="ads-reach">-</h4>
+                                                <p>Portée</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-mouse-pointer"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="ads-clicks">-</h4>
+                                                <p>Clics</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-percentage"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="ads-ctr">-</h4>
+                                                <p>CTR</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ads Stats Details -->
+                                <div id="ads-stats-details" class="stats-details" style="display: none;">
+                                    <h4>Détails par publicité</h4>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Publicité</th>
+                                                    <th>Statut</th>
+                                                    <th>Dépenses</th>
+                                                    <th>Portée</th>
+                                                    <th>Clics</th>
+                                                    <th>CTR</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ads-stats-table">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="ads-stats-loading" class="text-center" style="display: none; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3498db;"></i>
+                                    <p style="margin-top: 15px;">Chargement des statistiques...</p>
+                                </div>
+
+                                <div id="ads-stats-empty" class="text-center" style="color: #7f8c8d; padding: 40px;">
+                                    <i class="fas fa-bullhorn" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                                    Sélectionnez un compte publicitaire et cliquez sur "Charger" pour voir les statistiques.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campaigns Stats Tab -->
+                    <div id="campaigns-stats-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-line"></i> Statistiques des Campagnes</h3>
+                                <p>Vue d'ensemble de vos campagnes publicitaires</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="stats-filters" style="margin-bottom: 20px;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="campaigns-stats-period">Période :</label>
+                                            <select id="campaigns-stats-period" class="form-control">
+                                                <option value="last_7d">7 derniers jours</option>
+                                                <option value="last_30d" selected>30 derniers jours</option>
+                                                <option value="last_90d">90 derniers jours</option>
+                                                <option value="lifetime">Depuis le début</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="campaigns-stats-account">Compte publicitaire :</label>
+                                            <select id="campaigns-stats-account" class="form-control">
+                                                <option value="">Sélectionner un compte...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <button id="load-campaigns-stats" class="btn btn-primary">
+                                                <i class="fas fa-sync"></i> Charger
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Campaigns Stats Summary -->
+                                <div id="campaigns-stats-summary" class="stats-summary" style="display: none;">
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-euro-sign"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="campaigns-spend">-</h4>
+                                                <p>Budget total</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-bullhorn"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="campaigns-count">-</h4>
+                                                <p>Campagnes actives</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-chart-line"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="campaigns-performance">-</h4>
+                                                <p>Performance moyenne</p>
+                                            </div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-icon">
+                                                <i class="fas fa-target"></i>
+                                            </div>
+                                            <div class="stat-content">
+                                                <h4 id="campaigns-conversions">-</h4>
+                                                <p>Conversions</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Campaigns Stats Details -->
+                                <div id="campaigns-stats-details" class="stats-details" style="display: none;">
+                                    <h4>Détails par campagne</h4>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Campagne</th>
+                                                    <th>Objectif</th>
+                                                    <th>Statut</th>
+                                                    <th>Budget</th>
+                                                    <th>Dépenses</th>
+                                                    <th>Résultats</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="campaigns-stats-table">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="campaigns-stats-loading" class="text-center" style="display: none; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3498db;"></i>
+                                    <p style="margin-top: 15px;">Chargement des statistiques...</p>
+                                </div>
+
+                                <div id="campaigns-stats-empty" class="text-center" style="color: #7f8c8d; padding: 40px;">
+                                    <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                                    Sélectionnez un compte publicitaire et cliquez sur "Charger" pour voir les statistiques.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Scheduled Section -->
@@ -1054,6 +1954,419 @@
                 }, 300);
             }, 3000);
         }
+
+        // ========================
+        // NOUVELLES FONCTIONS v4.0.0 - Boost Post, Publicités et Statistiques
+        // ========================
+
+        // Gestion des onglets
+        function initializeTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    const parentSection = this.closest('.section');
+                    
+                    // Désactiver tous les onglets et contenus de cette section
+                    parentSection.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    parentSection.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Activer l'onglet et le contenu sélectionnés
+                    this.classList.add('active');
+                    const targetContent = parentSection.querySelector(`#${tabName}-tab`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Fonctions pour les Publicités
+        async function loadAdAccounts() {
+            try {
+                const response = await fetch('/api/ads/accounts');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const selects = document.querySelectorAll('#boost-ad-account, #create-ad-account, #ads-stats-account, #campaigns-stats-account');
+                    selects.forEach(select => {
+                        select.innerHTML = '<option value="">Sélectionner un compte...</option>';
+                        data.accounts.forEach(account => {
+                            const option = document.createElement('option');
+                            option.value = account.id;
+                            option.textContent = `${account.name} (${account.id})`;
+                            select.appendChild(option);
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des comptes publicitaires:', error);
+            }
+        }
+
+        async function boostPost() {
+            const form = document.getElementById('boost-form');
+            const formData = new FormData(form);
+            const button = document.getElementById('boost-submit');
+            
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Boost en cours...';
+            
+            try {
+                const response = await fetch('/api/ads/boost', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Post boosté avec succès !', 'success');
+                    form.reset();
+                } else {
+                    showNotification(data.error || 'Erreur lors du boost', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-rocket"></i> Booster maintenant';
+            }
+        }
+
+        async function createAd() {
+            const form = document.getElementById('create-ad-form');
+            const formData = new FormData(form);
+            const button = document.getElementById('create-ad-submit');
+            
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création en cours...';
+            
+            try {
+                const response = await fetch('/api/ads/create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Publicité créée avec succès !', 'success');
+                    form.reset();
+                    loadCampaigns(); // Recharger la liste des campagnes
+                } else {
+                    showNotification(data.error || 'Erreur lors de la création', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-plus"></i> Créer la publicité';
+            }
+        }
+
+        async function loadCampaigns() {
+            const accountSelect = document.getElementById('campaigns-ad-account');
+            const accountId = accountSelect.value;
+            
+            if (!accountId) {
+                document.getElementById('campaigns-list').innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 40px;">Sélectionnez un compte publicitaire pour voir les campagnes.</p>';
+                return;
+            }
+            
+            document.getElementById('campaigns-loading').style.display = 'block';
+            document.getElementById('campaigns-list').innerHTML = '';
+            
+            try {
+                const response = await fetch(`/api/ads/campaigns?account_id=${accountId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCampaigns(data.campaigns);
+                } else {
+                    document.getElementById('campaigns-list').innerHTML = '<p class="text-center" style="color: #e74c3c;">Erreur lors du chargement des campagnes.</p>';
+                }
+            } catch (error) {
+                document.getElementById('campaigns-list').innerHTML = '<p class="text-center" style="color: #e74c3c;">Erreur de connexion.</p>';
+            } finally {
+                document.getElementById('campaigns-loading').style.display = 'none';
+            }
+        }
+
+        function displayCampaigns(campaigns) {
+            const container = document.getElementById('campaigns-list');
+            
+            if (campaigns.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 40px;">Aucune campagne trouvée.</p>';
+                return;
+            }
+            
+            container.innerHTML = campaigns.map(campaign => `
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <h4 class="campaign-title">${campaign.name}</h4>
+                        <span class="campaign-status ${campaign.status.toLowerCase()}">${campaign.status}</span>
+                    </div>
+                    <div class="campaign-metrics">
+                        <div class="campaign-metric">
+                            <span class="campaign-metric-value">${campaign.budget || '-'}</span>
+                            <span class="campaign-metric-label">Budget</span>
+                        </div>
+                        <div class="campaign-metric">
+                            <span class="campaign-metric-value">${campaign.spend || '0'}</span>
+                            <span class="campaign-metric-label">Dépensé</span>
+                        </div>
+                        <div class="campaign-metric">
+                            <span class="campaign-metric-value">${campaign.reach || '0'}</span>
+                            <span class="campaign-metric-label">Portée</span>
+                        </div>
+                        <div class="campaign-metric">
+                            <span class="campaign-metric-value">${campaign.clicks || '0'}</span>
+                            <span class="campaign-metric-label">Clics</span>
+                        </div>
+                    </div>
+                    <div class="campaign-actions">
+                        <button class="btn btn-sm btn-primary" onclick="editCampaign('${campaign.id}')">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="pauseCampaign('${campaign.id}')">
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCampaign('${campaign.id}')">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Fonctions pour les Statistiques
+        async function loadPagesStats() {
+            const period = document.getElementById('pages-stats-period').value;
+            const pageId = document.getElementById('pages-stats-page').value;
+            
+            document.getElementById('pages-stats-loading').style.display = 'block';
+            document.getElementById('pages-stats-summary').style.display = 'none';
+            document.getElementById('pages-stats-details').style.display = 'none';
+            document.getElementById('pages-stats-empty').style.display = 'none';
+            
+            try {
+                const params = new URLSearchParams({ period });
+                if (pageId) params.append('page_id', pageId);
+                
+                const response = await fetch(`/api/insights/pages?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayPagesStats(data.insights);
+                } else {
+                    showNotification(data.error || 'Erreur lors du chargement des statistiques', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                document.getElementById('pages-stats-loading').style.display = 'none';
+            }
+        }
+
+        function displayPagesStats(insights) {
+            // Afficher le résumé
+            document.getElementById('pages-reach').textContent = formatNumber(insights.summary.reach);
+            document.getElementById('pages-impressions').textContent = formatNumber(insights.summary.impressions);
+            document.getElementById('pages-engagement').textContent = formatNumber(insights.summary.engagement);
+            document.getElementById('pages-followers').textContent = formatNumber(insights.summary.new_followers);
+            
+            document.getElementById('pages-stats-summary').style.display = 'block';
+            
+            // Afficher les détails par page
+            if (insights.pages && insights.pages.length > 0) {
+                const tbody = document.getElementById('pages-stats-table');
+                tbody.innerHTML = insights.pages.map(page => `
+                    <tr>
+                        <td>${page.name}</td>
+                        <td>${formatNumber(page.reach)}</td>
+                        <td>${formatNumber(page.impressions)}</td>
+                        <td>${formatNumber(page.engagement)}</td>
+                        <td>${formatNumber(page.new_followers)}</td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('pages-stats-details').style.display = 'block';
+            }
+        }
+
+        async function loadAdsStats() {
+            const period = document.getElementById('ads-stats-period').value;
+            const accountId = document.getElementById('ads-stats-account').value;
+            
+            if (!accountId) {
+                showNotification('Veuillez sélectionner un compte publicitaire', 'warning');
+                return;
+            }
+            
+            document.getElementById('ads-stats-loading').style.display = 'block';
+            document.getElementById('ads-stats-summary').style.display = 'none';
+            document.getElementById('ads-stats-details').style.display = 'none';
+            document.getElementById('ads-stats-empty').style.display = 'none';
+            
+            try {
+                const params = new URLSearchParams({ period, account_id: accountId });
+                const response = await fetch(`/api/insights/ads?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayAdsStats(data.insights);
+                } else {
+                    showNotification(data.error || 'Erreur lors du chargement des statistiques', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                document.getElementById('ads-stats-loading').style.display = 'none';
+            }
+        }
+
+        function displayAdsStats(insights) {
+            // Afficher le résumé
+            document.getElementById('ads-spend').textContent = formatCurrency(insights.summary.spend);
+            document.getElementById('ads-reach').textContent = formatNumber(insights.summary.reach);
+            document.getElementById('ads-clicks').textContent = formatNumber(insights.summary.clicks);
+            document.getElementById('ads-ctr').textContent = formatPercentage(insights.summary.ctr);
+            
+            document.getElementById('ads-stats-summary').style.display = 'block';
+            
+            // Afficher les détails par publicité
+            if (insights.ads && insights.ads.length > 0) {
+                const tbody = document.getElementById('ads-stats-table');
+                tbody.innerHTML = insights.ads.map(ad => `
+                    <tr>
+                        <td>${ad.name}</td>
+                        <td><span class="campaign-status ${ad.status.toLowerCase()}">${ad.status}</span></td>
+                        <td>${formatCurrency(ad.spend)}</td>
+                        <td>${formatNumber(ad.reach)}</td>
+                        <td>${formatNumber(ad.clicks)}</td>
+                        <td>${formatPercentage(ad.ctr)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editAd('${ad.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('ads-stats-details').style.display = 'block';
+            }
+        }
+
+        // Fonctions utilitaires
+        function formatNumber(num) {
+            if (!num) return '0';
+            return new Intl.NumberFormat('fr-FR').format(num);
+        }
+
+        function formatCurrency(amount) {
+            if (!amount) return '0 €';
+            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+        }
+
+        function formatPercentage(value) {
+            if (!value) return '0%';
+            return `${(value * 100).toFixed(2)}%`;
+        }
+
+        // Gestion des médias pour les publicités
+        function handleAdMediaUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const preview = input.closest('.form-group').querySelector('.media-preview');
+            if (!preview) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (file.type.startsWith('image/')) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu">`;
+                } else if (file.type.startsWith('video/')) {
+                    preview.innerHTML = `<video controls><source src="${e.target.result}" type="${file.type}"></video>`;
+                }
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Initialisation des nouvelles fonctionnalités v4.0.0
+        function initializeV4Features() {
+            initializeTabs();
+            
+            // Charger les comptes publicitaires
+            loadAdAccounts();
+            
+            // Charger les pages pour les statistiques
+            const pagesStatsSelect = document.getElementById('pages-stats-page');
+            if (pagesStatsSelect && window.allPages) {
+                pagesStatsSelect.innerHTML = '<option value="">Toutes les pages</option>';
+                window.allPages.forEach(page => {
+                    const option = document.createElement('option');
+                    option.value = page.id;
+                    option.textContent = page.name;
+                    pagesStatsSelect.appendChild(option);
+                });
+            }
+            
+            // Event listeners pour les formulaires
+            const boostForm = document.getElementById('boost-form');
+            if (boostForm) {
+                boostForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    boostPost();
+                });
+            }
+            
+            const createAdForm = document.getElementById('create-ad-form');
+            if (createAdForm) {
+                createAdForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    createAd();
+                });
+            }
+            
+            // Event listeners pour les statistiques
+            const loadPagesStatsBtn = document.getElementById('load-pages-stats');
+            if (loadPagesStatsBtn) {
+                loadPagesStatsBtn.addEventListener('click', loadPagesStats);
+            }
+            
+            const loadAdsStatsBtn = document.getElementById('load-ads-stats');
+            if (loadAdsStatsBtn) {
+                loadAdsStatsBtn.addEventListener('click', loadAdsStats);
+            }
+            
+            const loadCampaignsStatsBtn = document.getElementById('load-campaigns-stats');
+            if (loadCampaignsStatsBtn) {
+                loadCampaignsStatsBtn.addEventListener('click', function() {
+                    const accountId = document.getElementById('campaigns-stats-account').value;
+                    if (accountId) {
+                        loadCampaigns();
+                    } else {
+                        showNotification('Veuillez sélectionner un compte publicitaire', 'warning');
+                    }
+                });
+            }
+            
+            // Event listeners pour les uploads de médias
+            document.querySelectorAll('input[type="file"][id*="media"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    handleAdMediaUpload(this);
+                });
+            });
+        }
+
+        // Ajouter l'initialisation v4.0.0 au DOMContentLoaded existant
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... code existant ...
+            
+            // Initialiser les nouvelles fonctionnalités v4.0.0
+            setTimeout(initializeV4Features, 100);
+        });
     </script>
 </body>
 </html>

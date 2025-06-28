@@ -19,9 +19,6 @@ try:
     from routes.campaigns_routes import campaigns_bp  
     from routes.audiences_routes import audiences_bp
     from routes.facebook_api_routes import facebook_bp, reset_facebook_api
-    # Nouveaux blueprints v4.0.0 - Boost Post, Publicités et Statistiques
-    from routes.ads_routes import ads_bp, init_ads_api
-    from routes.insights_routes import insights_bp, init_insights_api
 except ImportError as e:
     print(f"Import error: {e}")
     # Fallback imports
@@ -30,11 +27,6 @@ except ImportError as e:
     audiences_bp = None
     facebook_bp = None
     reset_facebook_api = None
-    # Nouveaux blueprints v4.0.0
-    ads_bp = None
-    insights_bp = None
-    init_ads_api = None
-    init_insights_api = None
 
 app = Flask(__name__)
 CORS(app)
@@ -48,43 +40,6 @@ if audiences_bp:
     app.register_blueprint(audiences_bp)
 if facebook_bp:
     app.register_blueprint(facebook_bp, url_prefix='/api/facebook')
-# Nouveaux blueprints v4.0.0
-if ads_bp:
-    app.register_blueprint(ads_bp)
-if insights_bp:
-    app.register_blueprint(insights_bp)
-
-# Initialisation des nouveaux modules API v4.0.0
-def init_v4_apis():
-    """Initialiser les APIs pour les nouveaux modules v4.0.0"""
-    try:
-        # Import Facebook API
-        import sys
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-        from facebook_api import FacebookAPI
-        
-        # Load configuration
-        env_file = os.path.join(os.path.dirname(__file__), '..', '.env')
-        if os.path.exists(env_file):
-            with open(env_file, 'r') as f:
-                for line in f:
-                    if '=' in line and not line.startswith('#'):
-                        key, value = line.strip().split('=', 1)
-                        os.environ[key] = value
-        
-        access_token = os.environ.get('FACEBOOK_ACCESS_TOKEN')
-        if access_token and init_ads_api and init_insights_api:
-            fb_api = FacebookAPI(access_token=access_token)
-            init_ads_api(fb_api)
-            init_insights_api(fb_api)
-            print("✅ APIs v4.0.0 initialisées avec succès")
-        else:
-            print("⚠️ Token Facebook non disponible ou modules non importés")
-    except Exception as e:
-        print(f"❌ Erreur lors de l'initialisation des APIs v4.0.0: {e}")
-
-# Initialiser les APIs au démarrage
-init_v4_apis()
 
 @app.route('/')
 def index():

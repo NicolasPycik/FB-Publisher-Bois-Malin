@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Publisher Bois Malin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        /* Sidebar fixe 5cm (190px) */
+        .sidebar {
+            width: 190px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #ecf0f1;
+        }
+        .menu {
+            list-style: none;
+        }
+        .menu li {
+            margin-bottom: 5px;
+        }
+        .menu-item {
+            display: block;
+            padding: 12px 20px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            background: #34495e;
+            color: white;
+        }
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+        .menu-item i {
+            margin-right: 10px;
+            width: 16px;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 28px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn i {
+            font-size: 16px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .form-control.textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        .upload-area.dragover {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        .upload-placeholder {
+            padding: 40px 20px;
+            color: #7f8c8d;
+            cursor: pointer;
+        }
+        .upload-placeholder i {
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+        .upload-placeholder p {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .upload-placeholder small {
+            color: #95a5a6;
+        }
+
+        /* File Preview */
+        .file-preview-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .file-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .file-preview-item {
+            position: relative;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .file-preview-item:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .file-preview-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        .file-preview-video {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .file-preview-info {
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        .file-preview-name {
+            font-size: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .file-preview-size {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        .file-preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .file-preview-remove:hover {
+            background: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        /* Progress */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th {
+            background: #f8f9fa;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid #e9ecef;
+            color: #2c3e50;
+        }
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Status badges */
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .notification.success {
+            background: #28a745;
+        }
+        .notification.error {
+            background: #dc3545;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            .sidebar h2 {
+                display: none;
+            }
+            .menu-item span {
+                display: none;
+            }
+            .content {
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2>FB Publisher</h2>
+            <ul class="menu">
+                <li><a href="#" class="menu-item active" data-section="publish">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Publier</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="pages">
+                    <i class="fas fa-facebook"></i>
+                    <span>Pages</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="ads">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Publicités</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a></li>
+                <li><a href="#" class="menu-item" data-section="scheduled">
+                    <i class="fas fa-clock"></i>
+                    <span>Programmées</span>
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <h1>Facebook Publisher Bois Malin</h1>
+            </header>
+
+            <main class="content">
+                <!-- Publish Section -->
+                <section id="publish" class="section active">
+                    <div class="section-header">
+                        <h1 class="section-title">Publier du contenu</h1>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postMessage"><i class="fas fa-edit"></i> Message de publication :</label>
+                        <textarea id="postMessage" class="form-control textarea" 
+                                  placeholder="Écrivez votre message ici..."></textarea>
+                    </div>
+
+                    <!-- Section Upload de Médias -->
+                    <div class="form-group">
+                        <label for="mediaFiles"><i class="fas fa-upload"></i> Upload Images/Vidéos :</label>
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" id="mediaFiles" name="files" multiple 
+                                   accept="image/*,video/*,.mp4,.mov,.avi,.jpg,.jpeg,.png,.gif"
+                                   style="display: none;">
+                            <div class="upload-placeholder" onclick="document.getElementById('mediaFiles').click()">
+                                <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                                <p>Cliquez pour sélectionner des fichiers ou glissez-déposez</p>
+                                <small>Images: JPG, PNG, GIF | Vidéos: MP4, MOV, AVI</small>
+                            </div>
+                            <div id="uploadProgress" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <p id="progressText">Upload en cours...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Aperçu des fichiers sélectionnés -->
+                        <div id="filePreviewContainer" class="file-preview-container">
+                            <h4>Fichiers sélectionnés :</h4>
+                            <div id="filePreviewGrid" class="file-preview-grid"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-facebook"></i> Sélection des pages :</label>
+                        <div style="margin: 10px 0; display: flex; gap: 10px;">
+                            <button type="button" id="selectAllPagesBtn" class="btn btn-sm" style="background: #28a745; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                <i class="fas fa-check-square"></i> Sélectionner tout
+                            </button>
+                            <button type="button" id="deselectAllPagesBtn" class="btn btn-sm" style="background: #6c757d; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                <i class="fas fa-square"></i> Désélectionner tout
+                            </button>
+                        </div>
+                        <div id="pages-selection" style="max-height: 200px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px;">
+                            <p style="text-align: center; color: #7f8c8d; padding: 20px;">
+                                Veuillez d'abord synchroniser vos pages dans la section "Pages"
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Pages sélectionnées (<span id="selected-count">0</span>)</label>
+                        <div id="selected-pages-summary" style="min-height: 50px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <em>Aucune page sélectionnée</em>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="publishBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Publier maintenant
+                    </button>
+                </section>
+
+                <!-- Pages Section -->
+                <section id="pages" class="section">
+                    <div class="section-header">
+                        <h1 class="section-title">Pages Facebook</h1>
+                        <button class="btn" id="syncPagesBtn">
+                            <i class="fas fa-sync"></i>
+                            Synchroniser
+                        </button>
+                    </div>
+                    
+                    <div id="alert-container"></div>
+                    
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom de la page</th>
+                                    <th>Abonnés</th>
+                                    <th>Dernière publication</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pages-table-body">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px;">
+                                        Cliquez sur "Synchroniser" pour charger vos pages Facebook
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="section">
+                    <div class="section-header">
+                        <h1 class="section-title">Paramètres</h1>
+                        <button class="btn" id="saveSettingsBtn">
+                            <i class="fas fa-save"></i>
+                            Sauvegarder
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="app-id">App ID Facebook :</label>
+                        <input type="text" id="app-id" class="form-control" placeholder="Votre App ID Facebook">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="app-secret">App Secret Facebook :</label>
+                        <input type="password" id="app-secret" class="form-control" placeholder="Votre App Secret Facebook">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="access-token">Access Token :</label>
+                        <input type="password" id="access-token" class="form-control" placeholder="Votre Access Token Facebook">
+                    </div>
+                </section>
+
+                <!-- Ads Section -->
+                <section id="ads" class="section">
+                    <div class="section-header">
+                        <h1 class="section-title">Publicités</h1>
+                    </div>
+                    <p>Section des publicités en cours de développement.</p>
+                </section>
+
+                <!-- Analytics Section -->
+                <section id="analytics" class="section">
+                    <div class="section-header">
+                        <h1 class="section-title">Statistiques</h1>
+                    </div>
+                    <p>Section des statistiques en cours de développement.</p>
+                </section>
+
+                <!-- Scheduled Section -->
+                <section id="scheduled" class="section">
+                    <div class="section-header">
+                        <h1 class="section-title">Publications programmées</h1>
+                    </div>
+                    <p>Section des publications programmées en cours de développement.</p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let selectedFiles = [];
+        let selectedPages = [];
+        let allPages = [];
+
+        // Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial settings
+            loadSettings();
+            
+            // Load pages for publishing section by default
+            loadFacebookPagesForPublishing();
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = document.querySelectorAll('.section');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Remove active class from all menu items and sections
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked item and corresponding section
+                    this.classList.add('active');
+                    document.getElementById(targetSection).classList.add('active');
+                    
+                    // Load section-specific data
+                    if (targetSection === 'pages') {
+                        loadFacebookPages();
+                    } else if (targetSection === 'publish') {
+                        loadFacebookPagesForPublishing();
+                    }
+                });
+            });
+
+            // Event listeners
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Sync pages button
+            const syncBtn = document.getElementById('syncPagesBtn');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', syncFacebookPages);
+            }
+
+            // Save settings button
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveSettings);
+            }
+
+            // Publish button
+            const publishBtn = document.getElementById('publishBtn');
+            if (publishBtn) {
+                publishBtn.addEventListener('click', publishPost);
+            }
+
+            // File upload
+            const mediaFiles = document.getElementById('mediaFiles');
+            const uploadArea = document.getElementById('uploadArea');
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                handleFileSelection(files);
+            });
+
+            mediaFiles.addEventListener('change', (e) => {
+                handleFileSelection(e.target.files);
+            });
+
+            // Select/Deselect all pages buttons
+            const selectAllBtn = document.getElementById('selectAllPagesBtn');
+            const deselectAllBtn = document.getElementById('deselectAllPagesBtn');
+            
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', selectAllPages);
+            }
+            
+            if (deselectAllBtn) {
+                deselectAllBtn.addEventListener('click', deselectAllPages);
+            }
+        }
+
+        // File handling avec aperçu
+        function handleFileSelection(files) {
+            if (files.length === 0) return;
+
+            selectedFiles = Array.from(files);
+            displayFilePreview();
+        }
+
+        function displayFilePreview() {
+            const container = document.getElementById('filePreviewContainer');
+            const grid = document.getElementById('filePreviewGrid');
+            
+            if (selectedFiles.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            grid.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'file-preview-item';
+
+                const isImage = file.type.startsWith('image/');
+                const isVideo = file.type.startsWith('video/');
+
+                let mediaElement = '';
+                if (isImage) {
+                    const url = URL.createObjectURL(file);
+                    mediaElement = `<img src="${url}" class="file-preview-image" alt="${file.name}">`;
+                } else if (isVideo) {
+                    const url = URL.createObjectURL(file);
+                    mediaElement = `<video src="${url}" class="file-preview-video" controls></video>`;
+                } else {
+                    mediaElement = `<div class="file-preview-image" style="display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                        <i class="fas fa-file fa-3x" style="color: #bdc3c7;"></i>
+                    </div>`;
+                }
+
+                item.innerHTML = `
+                    ${mediaElement}
+                    <div class="file-preview-info">
+                        <div class="file-preview-name">${file.name}</div>
+                        <div class="file-preview-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="file-preview-remove" onclick="removeFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                grid.appendChild(item);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFilePreview();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Publication
+        async function publishPost() {
+            const message = document.getElementById('postMessage').value;
+            
+            if (!message.trim() && selectedFiles.length === 0) {
+                showNotification('Veuillez saisir un message ou sélectionner des fichiers', 'error');
+                return;
+            }
+
+            if (selectedPages.length === 0) {
+                showNotification('Veuillez sélectionner au moins une page', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('publishBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('page_ids', JSON.stringify(selectedPages.map(p => p.id)));
+
+                // Ajouter les fichiers
+                selectedFiles.forEach(file => {
+                    formData.append('files[]', file);
+                });
+
+                const response = await fetch('/api/facebook/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success || response.ok) {
+                    showNotification('Publication réussie !', 'success');
+                    // Reset form
+                    document.getElementById('postMessage').value = '';
+                    selectedFiles = [];
+                    displayFilePreview();
+                } else {
+                    showNotification('Erreur lors de la publication: ' + (data.error || 'Erreur inconnue'), 'error');
+                }
+            } catch (error) {
+                console.error('Publish error:', error);
+                showNotification('Erreur de connexion lors de la publication', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Facebook Pages functionality
+        async function syncFacebookPages() {
+            const btn = document.getElementById('syncPagesBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Synchronisation...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/facebook/pages/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(`${data.pages.length} pages synchronisées avec succès`, 'success');
+                    allPages = data.pages;
+                    displayPages(data.pages);
+                    updatePagesSelection();
+                } else {
+                    showAlert(data.error || 'Erreur lors de la synchronisation', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showAlert('Erreur de connexion', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function displayPages(pages) {
+            const tbody = document.getElementById('pages-table-body');
+            tbody.innerHTML = '';
+
+            pages.forEach(page => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${page.name}</td>
+                    <td>${page.fan_count || 'N/A'}</td>
+                    <td>${page.last_post || 'Récemment'}</td>
+                    <td><span class="status connected">Connectée</span></td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updatePagesSelection() {
+            const container = document.getElementById('pages-selection');
+            container.innerHTML = '';
+
+            if (allPages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Aucune page disponible</p>';
+                return;
+            }
+
+            allPages.forEach(page => {
+                const pageDiv = document.createElement('div');
+                pageDiv.style.cssText = 'display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #e0e0e0; cursor: pointer;';
+                pageDiv.innerHTML = `
+                    <input type="checkbox" id="page_${page.id}" style="margin-right: 10px;">
+                    <label for="page_${page.id}" style="flex: 1; cursor: pointer;">
+                        <strong>${page.name}</strong>
+                        <br><small style="color: #7f8c8d;">${page.fan_count || 'N/A'} abonnés</small>
+                    </label>
+                `;
+
+                const checkbox = pageDiv.querySelector('input');
+                checkbox.addEventListener('change', () => updateSelectedPages());
+
+                container.appendChild(pageDiv);
+            });
+        }
+
+        function updateSelectedPages() {
+            selectedPages = [];
+            allPages.forEach(page => {
+                const checkbox = document.getElementById(`page_${page.id}`);
+                if (checkbox && checkbox.checked) {
+                    selectedPages.push(page);
+                }
+            });
+
+            // Update summary
+            const countSpan = document.getElementById('selected-count');
+            const summaryDiv = document.getElementById('selected-pages-summary');
+            
+            countSpan.textContent = selectedPages.length;
+            
+            if (selectedPages.length === 0) {
+                summaryDiv.innerHTML = '<em>Aucune page sélectionnée</em>';
+            } else {
+                summaryDiv.innerHTML = selectedPages.map(page => 
+                    `<span style="display: inline-block; background: #e3f2fd; padding: 4px 8px; margin: 2px; border-radius: 4px; font-size: 12px;">${page.name}</span>`
+                ).join('');
+            }
+        }
+
+        function selectAllPages() {
+            allPages.forEach(page => {
+                const checkbox = document.getElementById(`page_${page.id}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+            updateSelectedPages();
+        }
+
+        function deselectAllPages() {
+            allPages.forEach(page => {
+                const checkbox = document.getElementById(`page_${page.id}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            });
+            updateSelectedPages();
+        }
+
+        async function loadFacebookPages() {
+            try {
+                const response = await fetch('/api/facebook/pages');
+                const data = await response.json();
+                
+                if (data.pages && data.pages.length > 0) {
+                    allPages = data.pages;
+                    displayPages(data.pages);
+                    updatePagesSelection();
+                }
+            } catch (error) {
+                console.error('Load pages error:', error);
+            }
+        }
+
+        async function loadFacebookPagesForPublishing() {
+            try {
+                const response = await fetch('/api/facebook/pages');
+                const data = await response.json();
+                
+                if (data.pages && data.pages.length > 0) {
+                    allPages = data.pages;
+                    updatePagesSelection();
+                } else {
+                    // If no pages, show sync message
+                    const container = document.getElementById('pages-selection');
+                    container.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Veuillez d\'abord synchroniser vos pages dans la section "Pages"</p>';
+                }
+            } catch (error) {
+                console.error('Load pages for publishing error:', error);
+                const container = document.getElementById('pages-selection');
+                container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 20px;">Erreur lors du chargement des pages</p>';
+            }
+        }
+
+        // Settings functionality
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                
+                if (data.app_id) {
+                    document.getElementById('app-id').value = data.app_id;
+                }
+                // Don't load secrets for security
+            } catch (error) {
+                console.error('Load settings error:', error);
+            }
+        }
+
+        async function saveSettings() {
+            const appId = document.getElementById('app-id').value;
+            const appSecret = document.getElementById('app-secret').value;
+            const accessToken = document.getElementById('access-token').value;
+
+            if (!appId || !appSecret || !accessToken) {
+                showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('saveSettingsBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        app_id: appId,
+                        app_secret: appSecret,
+                        access_token: accessToken
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Paramètres sauvegardés avec succès', 'success');
+                } else {
+                    showNotification('Erreur lors de la sauvegarde: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Save settings error:', error);
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Utility functions
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
