@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Facebook Publisher Bois Malin - SaaS Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #3730a3;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Mobile-First Layout */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--gray-100);
+            color: var(--primary-color);
+        }
+
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .mobile-logo i {
+            font-size: 1.5rem;
+        }
+
+        .mobile-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-btn:hover {
+            background: var(--gray-100);
+            color: var(--primary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Mobile Navigation Overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--white);
+            transform: translateX(-100%);
+            transition: var(--transition);
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .mobile-nav.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mobile-nav-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-nav-close:hover {
+            background: var(--gray-100);
+            color: var(--primary-color);
+        }
+
+        .mobile-nav-menu {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .mobile-nav-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .mobile-nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--gray-600);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+            min-height: 56px;
+        }
+
+        .mobile-nav-menu a:hover,
+        .mobile-nav-menu a.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .mobile-nav-menu i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1rem;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        /* Mobile Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dashboard-card h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-card .change {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Mobile Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            min-height: 36px;
+        }
+
+        /* Mobile Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            min-height: 48px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-400);
+        }
+
+        /* Mobile Tables - Convert to Cards */
+        .mobile-table {
+            display: none;
+        }
+
+        .mobile-cards {
+            display: block;
+        }
+
+        .mobile-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .mobile-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .mobile-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-card-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+        }
+
+        .mobile-card-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--success-color);
+            color: white;
+        }
+
+        .mobile-card-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-card-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-card-field-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-card-field-value {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .mobile-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            text-decoration: none;
+            color: var(--gray-500);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            min-height: 60px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .bottom-nav-item:hover,
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            left: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-xl);
+            z-index: 3000;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .notification-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .notification-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-200);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .mobile-card-body {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .section-header {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .app-container {
+                flex-direction: row;
+            }
+
+            .mobile-header {
+                display: none;
+            }
+
+            .mobile-nav-overlay,
+            .mobile-nav {
+                display: none;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            /* Desktop Sidebar */
+            .desktop-sidebar {
+                display: block;
+                width: 280px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                padding: 2rem;
+                box-shadow: var(--shadow-lg);
+            }
+
+            .desktop-sidebar-menu {
+                list-style: none;
+            }
+
+            .desktop-sidebar-menu li {
+                margin-bottom: 0.5rem;
+            }
+
+            .desktop-sidebar-menu a {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1rem;
+                text-decoration: none;
+                color: var(--gray-600);
+                border-radius: var(--border-radius);
+                transition: var(--transition);
+                font-weight: 500;
+            }
+
+            .desktop-sidebar-menu a:hover,
+            .desktop-sidebar-menu a.active {
+                background: var(--primary-color);
+                color: white;
+                transform: translateX(4px);
+            }
+
+            .main-content {
+                flex: 1;
+                padding: 2rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .mobile-cards {
+                display: none;
+            }
+
+            .mobile-table {
+                display: block;
+            }
+
+            .desktop-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                padding: 1rem 2rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+            .desktop-logo {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary-color);
+            }
+
+            .desktop-logo i {
+                font-size: 2rem;
+            }
+        }
+
+        /* Hide desktop elements on mobile */
+        @media (max-width: 1023px) {
+            .desktop-sidebar,
+            .desktop-header {
+                display: none;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --gray-50: #1f2937;
+                --gray-100: #374151;
+                --gray-200: #4b5563;
+                --gray-300: #6b7280;
+                --gray-400: #9ca3af;
+                --gray-500: #d1d5db;
+                --gray-600: #e5e7eb;
+                --gray-700: #f3f4f6;
+                --gray-800: #f9fafb;
+                --gray-900: #ffffff;
+                --white: #111827;
+            }
+
+            body {
+                background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Desktop Header -->
+        <header class="desktop-header">
+            <div class="desktop-logo">
+                <i class="fab fa-facebook"></i>
+                <span>Facebook Publisher Bois Malin</span>
+            </div>
+            <div class="mobile-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Desktop Sidebar -->
+        <aside class="desktop-sidebar">
+            <ul class="desktop-sidebar-menu">
+                <li><a href="#" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="publish">
+                    <i class="fas fa-edit"></i>
+                    <span>Publier</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="pages">
+                    <i class="fab fa-facebook"></i>
+                    <span>Pages Facebook</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="campaigns">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Publicités</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="scheduled">
+                    <i class="fas fa-clock"></i>
+                    <span>Publications programmées</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a></li>
+            </ul>
+        </aside>
+
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <i class="fab fa-facebook"></i>
+                <span>FB Publisher</span>
+            </div>
+            <div class="mobile-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav" id="mobileNav">
+            <div class="mobile-nav-header">
+                <div class="mobile-logo">
+                    <i class="fab fa-facebook"></i>
+                    <span>Facebook Publisher</span>
+                </div>
+                <button class="mobile-nav-close" id="mobileNavClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="publish">
+                        <i class="fas fa-edit"></i>
+                        <span>Publier</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="pages">
+                        <i class="fab fa-facebook"></i>
+                        <span>Pages Facebook</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="campaigns">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Publicités</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Statistiques</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="scheduled">
+                        <i class="fas fa-clock"></i>
+                        <span>Publications programmées</span>
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard</h1>
+                    <button class="btn btn-sm">
+                        <i class="fas fa-sync"></i>
+                        Actualiser
+                    </button>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Pages connectées</h3>
+                        <div class="value">66</div>
+                        <div class="change">
+                            <i class="fas fa-arrow-up"></i>
+                            +2 cette semaine
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Publications</h3>
+                        <div class="value">247</div>
+                        <div class="change">
+                            <i class="fas fa-arrow-up"></i>
+                            +15 aujourd'hui
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Portée totale</h3>
+                        <div class="value">45.2K</div>
+                        <div class="change">
+                            <i class="fas fa-arrow-up"></i>
+                            +8.3% ce mois
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Engagement</h3>
+                        <div class="value">12.8%</div>
+                        <div class="change">
+                            <i class="fas fa-arrow-up"></i>
+                            +2.1% ce mois
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; color: var(--gray-500);">
+                    <i class="fas fa-chart-area" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <h3>Graphiques et analytics détaillés</h3>
+                    <p>Section en cours de développement</p>
+                </div>
+            </section>
+
+            <!-- Publish Section -->
+            <section id="publish" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Publier</h1>
+                    <button class="btn btn-sm">
+                        <i class="fas fa-clock"></i>
+                        Programmer
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="post-content">Contenu de la publication</label>
+                    <textarea id="post-content" class="form-control" rows="6" placeholder="Rédigez votre publication..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pages sélectionnées</label>
+                    <div style="background: white; border-radius: var(--border-radius); padding: 1rem; border: 2px solid var(--gray-200);">
+                        <p style="color: var(--gray-500); margin: 0;">
+                            <i class="fas fa-info-circle"></i>
+                            Sélectionnez les pages dans l'onglet "Pages Facebook"
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn" style="width: 100%;">
+                        <i class="fas fa-paper-plane"></i>
+                        Publier maintenant
+                    </button>
+                </div>
+            </section>
+
+            <!-- Pages Section -->
+            <section id="pages" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Pages Facebook</h1>
+                    <button class="btn btn-sm" id="syncPagesBtn">
+                        <i class="fas fa-sync"></i>
+                        Synchroniser
+                    </button>
+                </div>
+                
+                <!-- Mobile Cards View -->
+                <div class="mobile-cards" id="pagesContainer">
+                    <!-- Pages will be loaded here -->
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="mobile-table" style="display: none;">
+                    <table style="width: 100%; background: white; border-radius: var(--border-radius); overflow: hidden;">
+                        <thead style="background: var(--gray-50);">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left;">Page</th>
+                                <th style="padding: 1rem; text-align: left;">Abonnés</th>
+                                <th style="padding: 1rem; text-align: left;">Dernière publication</th>
+                                <th style="padding: 1rem; text-align: left;">Statut</th>
+                                <th style="padding: 1rem; text-align: left;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pagesTableBody">
+                            <!-- Table rows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Other sections -->
+            <section id="campaigns" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Publicités</h1>
+                    <button class="btn btn-sm">
+                        <i class="fas fa-plus"></i>
+                        Nouvelle campagne
+                    </button>
+                </div>
+                <div style="background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; color: var(--gray-500);">
+                    <i class="fas fa-bullhorn" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <h3>Gestion des campagnes publicitaires</h3>
+                    <p>Section en cours de développement</p>
+                </div>
+            </section>
+
+            <section id="analytics" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Statistiques</h1>
+                    <button class="btn btn-sm">
+                        <i class="fas fa-download"></i>
+                        Exporter
+                    </button>
+                </div>
+                <div style="background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; color: var(--gray-500);">
+                    <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <h3>Analytics détaillées</h3>
+                    <p>Section en cours de développement</p>
+                </div>
+            </section>
+
+            <section id="scheduled" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Publications programmées</h1>
+                    <button class="btn btn-sm">
+                        <i class="fas fa-plus"></i>
+                        Programmer
+                    </button>
+                </div>
+                <div style="background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; color: var(--gray-500);">
+                    <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <h3>Planificateur de publications</h3>
+                    <p>Section en cours de développement</p>
+                </div>
+            </section>
+
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Paramètres</h1>
+                    <button class="btn btn-sm" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder
+                    </button>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: var(--gray-700);">Configuration Facebook API</h3>
+                    <div class="form-group">
+                        <label for="app-id">App ID</label>
+                        <input type="text" id="app-id" class="form-control" placeholder="Votre Facebook App ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="app-secret">App Secret</label>
+                        <input type="password" id="app-secret" class="form-control" placeholder="Votre Facebook App Secret">
+                    </div>
+                    <div class="form-group">
+                        <label for="access-token">Access Token</label>
+                        <input type="password" id="access-token" class="form-control" placeholder="Votre Access Token">
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--gray-700);">Préférences</h3>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="email-notifications" style="width: auto;">
+                            <span>Notifications par email</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="auto-reports" style="width: auto;">
+                            <span>Rapports automatiques</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="timezone">Fuseau horaire</label>
+                        <select id="timezone" class="form-control">
+                            <option>Europe/Paris</option>
+                            <option>Europe/London</option>
+                            <option>America/New_York</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <nav class="bottom-nav">
+            <a href="#" class="bottom-nav-item nav-link active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="bottom-nav-item nav-link" data-section="publish">
+                <i class="fas fa-edit"></i>
+                <span>Publier</span>
+            </a>
+            <a href="#" class="bottom-nav-item nav-link" data-section="pages">
+                <i class="fab fa-facebook"></i>
+                <span>Pages</span>
+            </a>
+            <a href="#" class="bottom-nav-item nav-link" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // Mobile Navigation
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+        const mobileNavClose = document.getElementById('mobileNavClose');
+
+        function openMobileNav() {
+            mobileNav.classList.add('active');
+            mobileNavOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileNav() {
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', openMobileNav);
+        mobileNavClose.addEventListener('click', closeMobileNav);
+        mobileNavOverlay.addEventListener('click', closeMobileNav);
+
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove('active'));
+                // Add active class to clicked link
+                link.classList.add('active');
+                
+                // Hide all sections
+                contentSections.forEach(section => section.classList.remove('active'));
+                // Show target section
+                const targetSection = document.getElementById(link.dataset.section);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                
+                // Close mobile nav if open
+                closeMobileNav();
+            });
+        });
+
+        // Notification System
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Hide and remove notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 4000);
+        }
+
+        // Settings Save
+        document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+            const appId = document.getElementById('app-id').value;
+            const appSecret = document.getElementById('app-secret').value;
+            const accessToken = document.getElementById('access-token').value;
+            
+            if (!appId || !appSecret || !accessToken) {
+                showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        app_id: appId,
+                        app_secret: appSecret,
+                        access_token: accessToken,
+                        email_notifications: document.getElementById('email-notifications').checked,
+                        auto_reports: document.getElementById('auto-reports').checked,
+                        timezone: document.getElementById('timezone').value
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification('Paramètres sauvegardés avec succès', 'success');
+                    // Mask sensitive fields
+                    document.getElementById('app-secret').value = '••••••••••••••••';
+                    document.getElementById('access-token').value = '••••••••••••••••';
+                } else {
+                    showNotification('Erreur lors de la sauvegarde', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            }
+        });
+
+        // Pages Sync
+        document.getElementById('syncPagesBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('syncPagesBtn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<div class="loading"></div> Synchronisation...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/facebook/pages/sync', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showNotification(data.message, 'success');
+                    loadPages(data.pages);
+                } else {
+                    showNotification(data.error || 'Erreur lors de la synchronisation', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        });
+
+        // Load Pages
+        function loadPages(pages) {
+            const container = document.getElementById('pagesContainer');
+            const tableBody = document.getElementById('pagesTableBody');
+            
+            if (!pages || pages.length === 0) {
+                container.innerHTML = `
+                    <div style="background: white; border-radius: var(--border-radius); padding: 2rem; text-align: center; color: var(--gray-500);">
+                        <i class="fab fa-facebook" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <h3>Aucune page trouvée</h3>
+                        <p>Cliquez sur "Synchroniser" pour récupérer vos pages Facebook</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mobile Cards
+            container.innerHTML = pages.map(page => `
+                <div class="mobile-card">
+                    <div class="mobile-card-header">
+                        <div class="mobile-card-title">${page.name}</div>
+                        <div class="mobile-card-status">${page.status}</div>
+                    </div>
+                    <div class="mobile-card-body">
+                        <div class="mobile-card-field">
+                            <div class="mobile-card-field-label">Abonnés</div>
+                            <div class="mobile-card-field-value">${page.fan_count || 'N/A'}</div>
+                        </div>
+                        <div class="mobile-card-field">
+                            <div class="mobile-card-field-label">Catégorie</div>
+                            <div class="mobile-card-field-value">${page.category}</div>
+                        </div>
+                        <div class="mobile-card-field">
+                            <div class="mobile-card-field-label">Publications</div>
+                            <div class="mobile-card-field-value">${page.posts_count || 0}</div>
+                        </div>
+                        <div class="mobile-card-field">
+                            <div class="mobile-card-field-label">Dernière publication</div>
+                            <div class="mobile-card-field-value">${page.last_post}</div>
+                        </div>
+                    </div>
+                    <div class="mobile-card-actions">
+                        <button class="btn btn-sm btn-secondary">
+                            <i class="fas fa-eye"></i>
+                            Voir
+                        </button>
+                        <button class="btn btn-sm">
+                            <i class="fas fa-chart-line"></i>
+                            Stats
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Desktop Table
+            if (tableBody) {
+                tableBody.innerHTML = pages.map(page => `
+                    <tr>
+                        <td style="padding: 1rem;">${page.name}</td>
+                        <td style="padding: 1rem;">${page.fan_count || 'N/A'}</td>
+                        <td style="padding: 1rem;">${page.last_post}</td>
+                        <td style="padding: 1rem;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background: var(--success-color); color: white;">
+                                ${page.status}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <button class="btn btn-sm btn-secondary" style="margin-right: 0.5rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved settings
+            fetch('/api/settings')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.app_id) document.getElementById('app-id').value = data.app_id;
+                    if (data.email_notifications) document.getElementById('email-notifications').checked = data.email_notifications;
+                    if (data.auto_reports) document.getElementById('auto-reports').checked = data.auto_reports;
+                    if (data.timezone) document.getElementById('timezone').value = data.timezone;
+                })
+                .catch(() => {});
+            
+            // Load pages
+            fetch('/api/facebook/pages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.pages) {
+                        loadPages(data.pages);
+                    }
+                })
+                .catch(() => {});
+        });
+
+        // Touch gestures for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!touchStartX || !touchStartY) return;
+
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchStartX - touchEndX;
+            const deltaY = touchStartY - touchEndY;
+
+            // Swipe right to open menu (only if not already open)
+            if (deltaX < -50 && Math.abs(deltaY) < 100 && !mobileNav.classList.contains('active')) {
+                openMobileNav();
+            }
+            
+            // Swipe left to close menu (only if menu is open)
+            if (deltaX > 50 && Math.abs(deltaY) < 100 && mobileNav.classList.contains('active')) {
+                closeMobileNav();
+            }
+
+            touchStartX = 0;
+            touchStartY = 0;
+        });
+    </script>
+</body>
+</html>
+
